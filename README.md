@@ -38,4 +38,4 @@ dotnet publish src/DiskGeek.App/DiskGeek.App.csproj -c Release -r win-x64 --self
 
 ## License
 
-Copyright (c) TechyGeeksHome. All rights reserved. This repository is private and not currently licensed for external use or redistribution.
+Copyright (c) 2026 TechyGeeksHome | Andrew Armstrong. Released under the [MIT License](./LICENSE).
