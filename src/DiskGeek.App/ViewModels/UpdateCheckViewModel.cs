@@ -1,0 +1,132 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DiskGeek.Core.Updates;
+
+namespace DiskGeek.App.ViewModels;
+
+/// <summary>
+/// Drives the "is there a newer version" check: a small hosted XML file is fetched, compared
+/// against the running build, and — only if something newer is actually found — a dismissible
+/// banner offers a link to go download it. This deliberately never downloads or installs anything
+/// itself; publishing an update just means editing the hosted manifest's &lt;version&gt; (and
+/// &lt;url&gt;/&lt;about&gt; if they changed) after uploading the new build somewhere.
+/// </summary>
+public partial class UpdateCheckViewModel : ObservableObject
+{
+    /// <summary>
+    /// Where the update manifest is hosted.
+    /// </summary>
+    public const string ManifestUrl = "https://techygeekshome.info/downloads/updates/da/daappinfo.xml";
+
+    private readonly IUpdateChecker _checker;
+    private readonly Version _currentVersion;
+
+    [ObservableProperty]
+    private bool _isChecking;
+
+    [ObservableProperty]
+    private bool _updateAvailable;
+
+    [ObservableProperty]
+    private string? _latestVersionDisplay;
+
+    [ObservableProperty]
+    private string? _downloadUrl;
+
+    [ObservableProperty]
+    private string? _aboutText;
+
+    [ObservableProperty]
+    private string _statusText = string.Empty;
+
+    /// <summary>
+    /// True right after an explicit <see cref="CheckNowCommand"/> run that did *not* find an update
+    /// (either "you're up to date" or an error) — a separate flag from <see cref="UpdateAvailable"/>
+    /// so the two banners (update-found vs. check-result) never both show at once and the result of
+    /// a manual click doesn't linger forever without a way to dismiss it.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showStatusMessage;
+
+    public UpdateCheckViewModel(Version currentVersion, IUpdateChecker? checker = null)
+    {
+        _currentVersion = currentVersion;
+        _checker = checker ?? new UpdateChecker();
+    }
+
+    /// <summary>
+    /// Meant for an on-startup check: never surfaces an error to the user (no internet, or the
+    /// manifest host being briefly unreachable, is a completely unremarkable state that shouldn't
+    /// greet someone with a warning the moment the app opens) — it only ever produces visible UI
+    /// when a genuinely newer version was found. Swallows every exception for the same reason: a
+    /// background "nice to know" check must never be able to take the app down.
+    /// </summary>
+    public async Task CheckSilentlyAsync()
+    {
+        try
+        {
+            var result = await RunCheckAsync().ConfigureAwait(false);
+            if (result.Failed || !result.IsUpdateAvailable) return;
+            ApplyAvailableUpdate(result);
+        }
+        catch
+        {
+            // Best-effort background check - see remarks above.
+        }
+    }
+
+    /// <summary>An explicit, user-initiated check (a "Check for Updates" button) — unlike the silent version, this always reports something back, including "you're up to date" or a plain-language error.</summary>
+    [RelayCommand]
+    private async Task CheckNowAsync()
+    {
+        var result = await RunCheckAsync();
+
+        if (result.Failed)
+        {
+            UpdateAvailable = false;
+            StatusText = result.ErrorMessage!;
+            ShowStatusMessage = true;
+            return;
+        }
+
+        if (result.IsUpdateAvailable)
+        {
+            ApplyAvailableUpdate(result);
+        }
+        else
+        {
+            UpdateAvailable = false;
+            StatusText = "You're running the latest version.";
+            ShowStatusMessage = true;
+        }
+    }
+
+    [RelayCommand]
+    private void Dismiss() => UpdateAvailable = false;
+
+    [RelayCommand]
+    private void DismissStatusMessage() => ShowStatusMessage = false;
+
+    private async Task<UpdateCheckResult> RunCheckAsync()
+    {
+        IsChecking = true;
+        try
+        {
+            return await _checker.CheckForUpdateAsync(ManifestUrl, _currentVersion).ConfigureAwait(false);
+        }
+        finally
+        {
+            IsChecking = false;
+        }
+    }
+
+    private void ApplyAvailableUpdate(UpdateCheckResult result)
+    {
+        UpdateAvailable = true;
+        ShowStatusMessage = false;
+        LatestVersionDisplay = result.LatestVersion?.ToString();
+        DownloadUrl = result.DownloadUrl;
+        AboutText = result.About;
+        StatusText = $"Version {LatestVersionDisplay} is available.";
+    }
+}

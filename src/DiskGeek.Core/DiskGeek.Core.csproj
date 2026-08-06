@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pure managed package (no native Windows dependency at compile time), so this builds fine
+         cross-platform. The Windows-only pieces of the API surface it exposes just throw
+         PlatformNotSupportedException at runtime on other OSes - guarded the same way the Recycle
+         Bin delete path is, via OperatingSystem.IsWindows()/[SupportedOSPlatform("windows")]. -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>

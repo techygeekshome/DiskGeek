@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DiskGeek.App.Views.PermissionsDialog"
+        Title="Permissions"
+        Width="560" Height="420"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="16">
+        <TextBlock DockPanel.Dock="Top" x:Name="PathText" FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,4" />
+        <TextBlock DockPanel.Dock="Top" x:Name="OwnerText" Margin="0,0,0,12" Foreground="Gray" />
+        <TextBlock DockPanel.Dock="Top" x:Name="ErrorText" TextWrapping="Wrap" Foreground="#d93025" IsVisible="False" Margin="0,0,0,12" />
+        <Button DockPanel.Dock="Bottom" Content="Close" Click="OnCloseClicked" HorizontalAlignment="Right" Margin="0,12,0,0" />
+        <ScrollViewer>
+            <ItemsControl x:Name="EntriesList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,3">
+                            <TextBlock Grid.Column="0" Text="{Binding IdentityName}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="1" Text="{Binding Rights}" Margin="8,0" Foreground="{Binding RightsColor}" />
+                            <TextBlock Grid.Column="2" Text="{Binding InheritedLabel}" Foreground="Gray" FontSize="11" Width="70" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

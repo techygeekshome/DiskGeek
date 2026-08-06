@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DiskGeek.App.Views.AboutDialog"
+        Title="About DiskGeek"
+        Width="420" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Assets/diskgeek.ico">
+    <StackPanel Margin="28" Spacing="4">
+        <Image Source="avares://DiskGeek.App/Assets/diskgeek.png" Width="72" Height="72" HorizontalAlignment="Center" Margin="0,0,0,12" />
+
+        <TextBlock Text="DiskGeek" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" />
+        <TextBlock x:Name="VersionText" HorizontalAlignment="Center" Foreground="Gray" Margin="0,0,0,12" />
+
+        <TextBlock Text="A disk space analyser from TechyGeeksHome" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,4" />
+
+        <Button x:Name="WebsiteLink" Content="techygeekshome.info" Click="OnWebsiteClicked"
+                HorizontalAlignment="Center" Margin="0,0,0,12" />
+
+        <TextBlock x:Name="CopyrightText" HorizontalAlignment="Center" Foreground="Gray" FontSize="11" />
+        <TextBlock Text="Free to download and use." HorizontalAlignment="Center" FontSize="11" Foreground="Gray" Margin="0,0,0,16" />
+
+        <Button Content="Close" Click="OnCloseClicked" HorizontalAlignment="Center" Padding="24,4" />
+    </StackPanel>
+</Window>

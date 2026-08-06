@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Shown in the window title (see MainWindowViewModel.AppVersion) so a user can tell at a
+         glance whether they're running the latest build - bump this with every release. -->
+    <Version>1.0.0</Version>
+    <!-- The .exe's own icon - what shows in Explorer, the taskbar, and Alt+Tab on Windows. -->
+    <ApplicationIcon>Assets\diskgeek.ico</ApplicationIcon>
+    <!-- These flow into the compiled .exe's Win32 version resource, i.e. what shows on the
+         "Details" tab of the file's Properties dialog in Windows Explorer (Product name,
+         Company, File description, Copyright). Without them the exe shows blank/generic values
+         there - easy to miss since it only shows up if someone right-clicks the file rather than
+         running it, but it's the same info Windows uses for SmartScreen prompts and the
+         Add/Remove Programs listing during install. -->
+    <Product>DiskGeek</Product>
+    <Company>TechyGeeksHome</Company>
+    <Authors>TechyGeeksHome</Authors>
+    <!-- AssemblyTitle, not Description, is what becomes the exe's "File description" field in
+         Windows - Description alone left it showing the raw assembly name instead. -->
+    <AssemblyTitle>DiskGeek - Disk Space Analyser</AssemblyTitle>
+    <Description>DiskGeek - a free disk space analyser from TechyGeeksHome</Description>
+    <Copyright>© TechyGeeksHome. All rights reserved.</Copyright>
+    <NeutralLanguage>en-GB</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Embeds everything under Assets/ as an avares:// resource, so XAML (e.g. MainWindow's
+         Window.Icon, for the in-app title-bar icon) can reference it at runtime. -->
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.7" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.7" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiskGeek.Core\DiskGeek.Core.csproj" />
+  </ItemGroup>
+</Project>

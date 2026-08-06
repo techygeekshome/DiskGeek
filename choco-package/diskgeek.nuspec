@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>diskgeek</id>
+    <version>1.0.0.0</version>
+    <packageSourceUrl>https://techygeekshome.info/diskgeek/</packageSourceUrl>
+    <owners>techygeekshome</owners>
+
+    <title>DiskGeek</title>
+    <authors>TechyGeeksHome</authors>
+    <projectUrl>https://techygeekshome.info/diskgeek/</projectUrl>
+    <iconUrl>https://techygeekshome.info/wp-content/uploads/2026/08/diskgeek.png</iconUrl>
+    <copyright>TechyGeeksHome</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <docsUrl>https://techygeekshome.info/diskgeek/</docsUrl>
+    <bugTrackerUrl>mailto:contact@techygeekshome.info</bugTrackerUrl>
+    <tags>diskgeek disk-space-analyzer disk-analyzer duplicate-finder duplicate-files treemap storage-cleanup windows admin</tags>
+    <summary>A free, self-contained disk space analyser for Windows with exact and near-duplicate detection, search, batch rename, and snapshot comparison.</summary>
+    <description>
+DiskGeek scans your drives and shows exactly what's eating your space:
+
+- List view and treemap view of disk usage
+- Exact and perceptual-hash (near-duplicate) file detection
+- Similar-image finding
+- Full-text search across scan results
+- Batch rename
+- Snapshot comparison, to see what changed over time
+- Scheduled scans
+
+No installer bloat, no bundled offers, no telemetry. 100% free, no Pro tier.
+
+**Note:** the installer is not yet signed with a paid code-signing certificate, so Windows SmartScreen may show an "unrecognised app" warning the first time you run it — this is disclosed on the product's own page and is expected for a small independent publisher. See tools\VERIFICATION.txt in this package for how to independently verify the installer checksum.
+    </description>
+    <releaseNotes>https://techygeekshome.info/diskgeek/ — 1.0.0.0: initial public release.</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

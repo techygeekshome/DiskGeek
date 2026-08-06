@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DiskGeek.App.Views.BatchRenameDialog"
+        Title="Batch Rename"
+        Width="720" Height="560"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="16">
+        <TextBlock DockPanel.Dock="Top" Text="Renaming files - review the preview below before applying." FontWeight="Bold" Margin="0,0,0,12" />
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,180,Auto,180" RowDefinitions="Auto,Auto,Auto" Margin="0,0,0,8">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Find:" VerticalAlignment="Center" Margin="0,4,6,4" />
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="FindBox" Margin="0,4,16,4" />
+            <CheckBox Grid.Row="0" Grid.Column="2" x:Name="RegexCheck" Content="Regex" VerticalAlignment="Center" Margin="0,4,6,4" />
+            <TextBox Grid.Row="0" Grid.Column="3" x:Name="ReplaceBox" Watermark="Replace with…" Margin="0,4,0,4" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Prefix:" VerticalAlignment="Center" Margin="0,4,6,4" />
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="PrefixBox" Margin="0,4,16,4" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="Suffix:" VerticalAlignment="Center" Margin="0,4,6,4" />
+            <TextBox Grid.Row="1" Grid.Column="3" x:Name="SuffixBox" Margin="0,4,0,4" />
+
+            <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="CounterCheck" Content="Add counter (###) before extension" Margin="0,4,0,4" />
+            <Button Grid.Row="2" Grid.Column="3" Content="Update Preview" Click="OnUpdatePreviewClicked" HorizontalAlignment="Right" Margin="0,4,0,4" />
+        </Grid>
+
+        <TextBlock DockPanel.Dock="Bottom" x:Name="SummaryText" Margin="0,8,0,0" TextWrapping="Wrap" />
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+            <Button Content="Cancel" Click="OnCancelClicked" />
+            <Button x:Name="ApplyButton" Content="Apply Rename" Classes="accent" Click="OnApplyClicked" />
+        </StackPanel>
+
+        <ScrollViewer>
+            <ItemsControl x:Name="PreviewList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,Auto,*,Auto" Margin="0,3">
+                            <TextBlock Grid.Column="0" Text="{Binding OriginalName}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="1" Text=" → " Margin="6,0" />
+                            <TextBlock Grid.Column="2" Text="{Binding NewName}" TextTrimming="CharacterEllipsis"
+                                       Foreground="{Binding NameColor}" />
+                            <TextBlock Grid.Column="3" Text="{Binding Error}" Foreground="#d93025" FontSize="11" Margin="8,0,0,0" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

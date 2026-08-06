@@ -1,0 +1,28 @@
+VERIFICATION
+
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+This package downloads the official DiskGeek installer directly from the
+software publisher's own website. TechyGeeksHome is both the publisher of
+DiskGeek and the maintainer of this Chocolatey package.
+
+Download URL:
+  https://techygeekshome.info/downloads/diskgeek/DiskGeekSetup.exe
+
+Product / homepage:
+  https://techygeekshome.info/diskgeek/
+
+To verify the checksum independently, download the installer from the URL
+above and run the following in PowerShell:
+
+  Get-FileHash .\DiskGeekSetup.exe -Algorithm SHA256
+
+The result should match the checksum embedded in tools\chocolateyInstall.ps1:
+
+  1F29DF37544B9F5EA829EC87EE4FDC77B2209D3B82CF8E1A986021FC735F70B4
+
+Note: as disclosed on the product page, the installer is not yet signed
+with a paid code-signing certificate, so Windows SmartScreen may show an
+"unrecognised app" warning on first run. This does not affect the checksum
+verification above, and is expected for a small independent publisher.

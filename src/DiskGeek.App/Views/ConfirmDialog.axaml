@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DiskGeek.App.Views.ConfirmDialog"
+        Title="Confirm"
+        Width="480" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="20" Spacing="16">
+        <TextBlock x:Name="TitleText" FontWeight="Bold" FontSize="15" TextWrapping="Wrap" />
+        <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+        <TextBlock x:Name="WarningText" TextWrapping="Wrap" Foreground="#d93025" FontWeight="Bold" IsVisible="False" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button x:Name="CancelButton" Content="Cancel" Click="OnCancelClicked" />
+            <Button x:Name="ConfirmButton" Content="Delete" Classes="accent" Click="OnConfirmClicked" />
+        </StackPanel>
+    </StackPanel>
+</Window>
