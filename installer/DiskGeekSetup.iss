@@ -33,7 +33,7 @@
 ; 5. Test it on a clean-ish machine or VM if you can - first-run behaviour is the easiest
 ;    thing to get wrong and the hardest to notice on your own dev machine.
 ;
-; 6. Upload DiskGeekSetup.exe to https://techygeekshome.info/downloads/disk-analyzer/ (the
+; 6. Upload DiskGeekSetup.exe to https://techygeekshome.info/downloads/diskgeek/ (the
 ;    exact path already referenced in daappinfo.xml) and make sure the manifest's
 ;    <version> matches this build - see the README's "How updates reach you" section.
 ; ---------------------------------------------------------------------------------------
@@ -41,7 +41,7 @@
 #define MyAppName "DiskGeek"
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "TechyGeeksHome"
-#define MyAppURL "https://techygeekshome.info"
+#define MyAppURL "https://techygeekshome.info/diskgeek/"
 #define MyAppExeName "DiskGeek.App.exe"
 #define SourceDir "..\publish\win-x64"
 #define IconFile "..\src\DiskGeek.App\Assets\diskgeek.ico"
