@@ -8,7 +8,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.0-4c9bff)](https://github.com/techygeekshome/DiskGeek/releases)
 [![Platform](https://img.shields.io/badge/platform-Windows-0078d4)](#-download--run)
-[![License](https://img.shields.io/badge/license-MIT-3fca86)](LICENSE)
+[![License](https://img.shields.io/badge/license-proprietary%20freeware-b7791f)](LICENSE)
 [![Made by TechyGeeksHome](https://img.shields.io/badge/made%20by-TechyGeeksHome-b191f2)](https://techygeekshome.info)
 
 [Download](#-download--run) · [Features](#-what-it-does) · [Screenshots](#-screenshots) · [Build from source](#-build-from-source) · [License](#-license)
@@ -88,7 +88,9 @@ Found a bug or have a request? [Open an issue](https://github.com/techygeekshome
 
 ## 📄 License
 
-Released under the [MIT License](LICENSE) — © 2026 TechyGeeksHome | Andrew Armstrong.
+DiskGeek is free to download and use. This is proprietary freeware, not open source — see [LICENSE](LICENSE) for the full terms.
+
+© 2026 TechyGeeksHome | Andrew Armstrong.
 
 ---
 
