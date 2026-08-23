@@ -6,10 +6,11 @@
 
 **A free, self-contained disk space analyser for Windows — find what's eating your storage, and clean it up.**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-4c9bff)](https://github.com/techygeekshome/DiskGeek/releases)
+[![Version](https://img.shields.io/github/v/release/techygeekshome/DiskGeek?label=version&color=4c9bff)](https://github.com/techygeekshome/DiskGeek/releases)
 [![Platform](https://img.shields.io/badge/platform-Windows-0078d4)](#-download--run)
 [![License](https://img.shields.io/badge/license-proprietary%20freeware-b7791f)](LICENSE)
 [![Made by TechyGeeksHome](https://img.shields.io/badge/made%20by-TechyGeeksHome-b191f2)](https://techygeekshome.info)
+[![Support on Ko-fi](https://img.shields.io/badge/support-Ko--fi-ff5e5b)](https://ko-fi.com/techygeekshome)
 
 [Download](#-download--run) · [Features](#-what-it-does) · [Screenshots](#-screenshots) · [Build from source](#-build-from-source) · [License](#-license)
 
