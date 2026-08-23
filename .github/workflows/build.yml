@@ -1,0 +1,69 @@
+# Builds DiskGeek on every push and pull request.
+#
+# The point is the same as PDFGeek's: a published binary should be a verifiable,
+# automated build of the source in this repository, rather than something
+# compiled on a maintainer's own machine and uploaded.
+#
+# The installer is compiled here too, so a broken installer/DiskGeekSetup.iss is
+# caught in a pull request rather than at release time. The finished setup exe is
+# attached to the run so a reviewer can download and click through the exact
+# build a PR produced, without having to build it locally.
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore DiskGeek.sln
+
+      # Warnings are left as warnings on purpose. This is the first CI pass over an
+      # existing codebase; failing on pre-existing warnings would just mean nobody
+      # ever turns it on.
+      - name: Build
+        run: dotnet build DiskGeek.sln --configuration Release --no-restore
+
+      # Self-contained, win-x64, into publish\win-x64 - exactly the layout
+      # DiskGeekSetup.iss expects via its SourceDir of "..\publish\win-x64".
+      - name: Publish
+        run: dotnet publish src/DiskGeek.App/DiskGeek.App.csproj --configuration Release -r win-x64 --self-contained true -o publish/win-x64
+
+      - name: Compile the installer
+        shell: pwsh
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) {
+            Write-Host 'Inno Setup is not on the runner image - installing it.'
+            choco install innosetup --no-progress -y
+          }
+          if (-not (Test-Path $iscc)) { throw "ISCC.exe not found at $iscc" }
+          & $iscc 'installer\DiskGeekSetup.iss'
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path 'installer\Output\DiskGeekSetup.exe')) { throw 'DiskGeekSetup.exe was not produced.' }
+
+      - name: Attach the installer for smoke-testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiskGeekSetup
+          path: installer/Output/DiskGeekSetup.exe
+          if-no-files-found: error
+          retention-days: 14
