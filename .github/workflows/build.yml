@@ -33,23 +33,23 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # NOTE: this deliberately does not restore DiskGeek.sln. The solution file
-      # lists two projects that have never existed in this repository -
-      # tests/DiskGeek.Core.Tests and tools/DiskGeek.Smoke - so `dotnet restore
-      # DiskGeek.sln` fails outright. Visual Studio tolerates missing projects with
-      # a warning, which is why it has gone unnoticed. Building the two real
-      # projects directly keeps CI honest until the solution file is either
-      # cleaned up or those projects are actually written.
       - name: Restore
-        run: |
-          dotnet restore src/DiskGeek.Core/DiskGeek.Core.csproj
-          dotnet restore src/DiskGeek.App/DiskGeek.App.csproj
+        run: dotnet restore DiskGeek.sln
 
       # Warnings are left as warnings on purpose. This is the first CI pass over an
       # existing codebase; failing on pre-existing warnings would just mean nobody
       # ever turns it on.
       - name: Build
-        run: dotnet build src/DiskGeek.App/DiskGeek.App.csproj --configuration Release --no-restore
+        run: dotnet build DiskGeek.sln --configuration Release --no-restore
+
+      # The xUnit suite: units in isolation, no disk or network.
+      - name: Test
+        run: dotnet test tests/DiskGeek.Core.Tests/DiskGeek.Core.Tests.csproj --configuration Release --no-build --verbosity normal
+
+      # The smoke harness: builds a real folder tree and runs the real scanner and
+      # searcher over it. Exits non-zero on any failure, which fails the job.
+      - name: Smoke test
+        run: dotnet run --project tools/DiskGeek.Smoke --configuration Release --no-build
 
       # Self-contained, win-x64, into publish\win-x64 - exactly the layout
       # DiskGeekSetup.iss expects via its SourceDir of "..\publish\win-x64".
