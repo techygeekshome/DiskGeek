@@ -10,6 +10,12 @@ namespace DiskGeek.App.ViewModels;
 /// banner offers a link to go download it. This deliberately never downloads or installs anything
 /// itself; publishing an update just means editing the hosted manifest's &lt;version&gt; (and
 /// &lt;url&gt;/&lt;about&gt; if they changed) after uploading the new build somewhere.
+///
+/// <para>
+/// The check only ever runs when the user clicks "Check for Updates…" — nothing is requested at
+/// startup. That matches PDFGeek, and it means simply opening DiskGeek makes no network request
+/// at all, which is a promise worth being able to make plainly on the product page.
+/// </para>
 /// </summary>
 public partial class UpdateCheckViewModel : ObservableObject
 {
@@ -54,28 +60,7 @@ public partial class UpdateCheckViewModel : ObservableObject
         _checker = checker ?? new UpdateChecker();
     }
 
-    /// <summary>
-    /// Meant for an on-startup check: never surfaces an error to the user (no internet, or the
-    /// manifest host being briefly unreachable, is a completely unremarkable state that shouldn't
-    /// greet someone with a warning the moment the app opens) — it only ever produces visible UI
-    /// when a genuinely newer version was found. Swallows every exception for the same reason: a
-    /// background "nice to know" check must never be able to take the app down.
-    /// </summary>
-    public async Task CheckSilentlyAsync()
-    {
-        try
-        {
-            var result = await RunCheckAsync().ConfigureAwait(false);
-            if (result.Failed || !result.IsUpdateAvailable) return;
-            ApplyAvailableUpdate(result);
-        }
-        catch
-        {
-            // Best-effort background check - see remarks above.
-        }
-    }
-
-    /// <summary>An explicit, user-initiated check (a "Check for Updates" button) — unlike the silent version, this always reports something back, including "you're up to date" or a plain-language error.</summary>
+    /// <summary>The one and only entry point: an explicit, user-initiated check behind the "Check for Updates…" button. Always reports something back, including "you're up to date" or a plain-language error.</summary>
     [RelayCommand]
     private async Task CheckNowAsync()
     {
