@@ -60,6 +60,15 @@ Also available on [MajorGeeks](https://www.majorgeeks.com/files/details/diskgeek
 - ⏰ **Scheduled scans** for ongoing monitoring.
 - 🔒 **Private** — no telemetry, no bundled offers, no installer bloat.
 
+### On the one network call
+
+DiskGeek makes exactly one network request, and only when you click **Check for Updates…**.
+It fetches a small XML file listing the latest published version, and sends nothing with the
+request beyond what any HTTP client sends — no identifier, no scan data, no usage figures.
+If a newer version exists you get a banner with a link; DiskGeek never downloads or installs
+anything itself. **Nothing is requested at startup**, so opening the app makes no network
+call at all.
+
 ## 🔧 Build from source
 
 Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
