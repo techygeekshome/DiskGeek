@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>diskgeek</id>
+    <version>1.0.0</version>
+    <title>DiskGeek</title>
+    <authors>TechyGeeksHome</authors>
+    <owners>techygeekshome</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/techygeekshome/DiskGeek/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://techygeekshome.info/diskgeek/</projectUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/techygeekshome/DiskGeek@11c9cc15550f14f8a2ea031c28e6799b115d83a5/icons/diskgeek.png</iconUrl>
+    <description>DiskGeek scans your drives and shows exactly what is eating your space, with both a
+list view and a treemap view of disk usage.
+
+* Find exact duplicates, and near-duplicates using perceptual hashing, including similar images
+* Full-text search across scan results
+* Snapshot comparison, so you can see what changed between scans over time
+* Batch rename
+* Scheduled scans for ongoing monitoring
+
+No installer bloat, no bundled offers and no telemetry. Free at home and at work, with no Pro
+tier, no per-seat licence and no upsells.
+
+Built on Avalonia and .NET 8. The runtime is self-contained, so there is nothing to install
+beforehand.</description>
+    <summary>Free disk space analyser for Windows with treemap, duplicate detection and scheduled scans</summary>
+    <releaseNotes>https://github.com/techygeekshome/DiskGeek/releases/tag/v1.0.0</releaseNotes>
+    <copyright>Copyright (c) 2026 TechyGeeksHome</copyright>
+    <tags>disk-space disk-analyzer duplicates treemap storage cleanup windows freeware admin</tags>
+    <projectSourceUrl>https://github.com/techygeekshome/DiskGeek</projectSourceUrl>
+    <packageSourceUrl>https://github.com/techygeekshome/DiskGeek</packageSourceUrl>
+    <docsUrl>https://techygeekshome.info/diskgeek/</docsUrl>
+    <bugTrackerUrl>https://github.com/techygeekshome/DiskGeek/issues</bugTrackerUrl>
+  </metadata>
+</package>
