@@ -137,7 +137,7 @@ public partial class MainWindow : Window
 
     private async void OnAboutClicked(object? sender, RoutedEventArgs e)
     {
-        await AboutDialog.ShowAsync(this);
+        await AboutDialog.ShowAsync(this, (DataContext as MainWindowViewModel)?.Updates);
     }
 
     private async void OnExportCsvClicked(object? sender, RoutedEventArgs e)
