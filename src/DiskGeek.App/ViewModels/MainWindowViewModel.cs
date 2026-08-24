@@ -70,11 +70,6 @@ public partial class MainWindowViewModel : ObservableObject
 
         Duplicates.FilesDeleted += (_, deletedNodes) => PatchTreeAfterDelete(deletedNodes);
         SimilarImages.FilesDeleted += (_, deletedNodes) => PatchTreeAfterDelete(deletedNodes);
-
-        // Best-effort, silent, fire-and-forget: never blocks startup and never surfaces an error
-        // just because the machine happens to be offline right now - see the remarks on
-        // UpdateCheckViewModel.CheckSilentlyAsync for why that specifically matters here.
-        _ = Updates.CheckSilentlyAsync();
     }
 
     private static readonly ObservableCollection<FileSystemNodeViewModel> Empty = new();
