@@ -1,0 +1,140 @@
+# Produces the published DiskGeek installer and attaches it to a GitHub release.
+#
+# Triggered by pushing a version tag, e.g.:
+#     git tag v1.0.1 && git push origin v1.0.1
+#
+# The tag is the single source of truth for the version. It is passed to both
+# dotnet publish and the Inno Setup compiler, and the job refuses to publish if
+# the binary does not come back carrying it - a mislabelled release is worse than
+# no release, and DiskGeek has already had a version drift once.
+#
+# One download is published:
+#     DiskGeekSetup.exe   installer, self-contained, no .NET prerequisite
+#
+# A SHA-256 hash is published alongside it so a download can be verified. The
+# binaries are not code signed, so Windows SmartScreen will warn on first run;
+# checking the published hash is how to confirm what you downloaded.
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Work out the version to stamp
+        id: ver
+        shell: pwsh
+        run: |
+          # A tag push is the normal path: v1.0.1 -> 1.0.1
+          # A manual run has no tag, so fall back to the version in the csproj.
+          $ref = '${{ github.ref_name }}'
+          if ($ref -match '^v(\d+\.\d+\.\d+(\.\d+)?)$') {
+            $version = $Matches[1]
+          } else {
+            [xml]$proj = Get-Content src/DiskGeek.App/DiskGeek.App.csproj
+            $version = ($proj.Project.PropertyGroup.Version | Where-Object { $_ }) | Select-Object -First 1
+            Write-Host 'No version tag on this run - falling back to the csproj version.'
+          }
+          if (-not $version) { throw 'Could not determine a version to stamp.' }
+          Write-Host "Stamping version $version"
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Restore
+        run: dotnet restore DiskGeek.sln
+
+      - name: Build
+        run: dotnet build DiskGeek.sln --configuration Release --no-restore
+
+      # The same gates the Build workflow runs. A release should never ship
+      # something that would have failed a pull request.
+      - name: Test
+        run: dotnet test tests/DiskGeek.Core.Tests/DiskGeek.Core.Tests.csproj --configuration Release --no-build --verbosity normal
+
+      - name: Smoke test
+        run: dotnet run --project tools/DiskGeek.Smoke --configuration Release --no-build
+
+      # Self-contained, win-x64, into publish\win-x64 - exactly the layout
+      # DiskGeekSetup.iss expects via its SourceDir of "..\publish\win-x64".
+      - name: Publish self-contained build
+        run: >
+          dotnet publish src/DiskGeek.App/DiskGeek.App.csproj
+          --configuration Release
+          --runtime win-x64
+          -p:Version=${{ steps.ver.outputs.version }}
+          --self-contained true
+          --output publish/win-x64
+
+      - name: Build the installer
+        shell: pwsh
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) {
+            Write-Host 'Inno Setup is not on the runner image - installing it.'
+            choco install innosetup --no-progress -y
+          }
+          if (-not (Test-Path $iscc)) { throw "ISCC.exe not found at $iscc" }
+          & $iscc "/DMyAppVersion=${{ steps.ver.outputs.version }}" 'installer\DiskGeekSetup.iss'
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path 'installer\Output\DiskGeekSetup.exe')) { throw 'DiskGeekSetup.exe was not produced.' }
+
+      - name: Collect artefacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item installer/Output/DiskGeekSetup.exe dist/DiskGeekSetup.exe
+
+          # Publish hashes so anyone can verify what they downloaded.
+          Get-ChildItem dist/*.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)" | Out-File -FilePath dist/SHA256SUMS.txt -Append -Encoding utf8
+            Write-Host "$hash  $($_.Name)"
+          }
+
+      - name: Check the version was actually stamped
+        shell: pwsh
+        run: |
+          $expected = '${{ steps.ver.outputs.version }}'
+          $bad = @()
+          foreach ($path in 'publish/win-x64/DiskGeek.App.exe','dist/DiskGeekSetup.exe') {
+            $info = (Get-Item $path).VersionInfo
+            $file = $info.FileVersion
+            $prod = $info.ProductVersion
+            Write-Host "$path  FileVersion=$file  ProductVersion=$prod"
+            if ($file -notlike "$expected*" -and $prod -notlike "$expected*") {
+              $bad += "$path reports $file / $prod, expected $expected"
+            }
+          }
+          if ($bad.Count) {
+            $bad | ForEach-Object { Write-Host "FAIL: $_" }
+            throw 'The published binaries do not carry the release version. Refusing to publish a mislabelled release.'
+          }
+          Write-Host "OK - the build reports $expected"
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: diskgeek-${{ github.ref_name }}
+          path: dist/*
+
+      - name: Attach to the GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
