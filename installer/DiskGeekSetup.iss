@@ -39,7 +39,12 @@
 ; ---------------------------------------------------------------------------------------
 
 #define MyAppName "DiskGeek"
-#define MyAppVersion "1.0.0"
+; The release workflow passes the version in with /DMyAppVersion=x.y.z so that the
+; git tag is the single source of truth. The value below is only a fallback for a
+; local build straight out of the Inno Setup Compiler.
+#ifndef MyAppVersion
+#define MyAppVersion "1.0.1"
+#endif
 #define MyAppPublisher "TechyGeeksHome"
 #define MyAppURL "https://techygeekshome.info/diskgeek/"
 #define MyAppExeName "DiskGeek.App.exe"
