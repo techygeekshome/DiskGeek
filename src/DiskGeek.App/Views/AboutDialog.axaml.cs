@@ -67,6 +67,9 @@ public partial class AboutDialog : Window
         CloseButton.Click += (_, _) => Close();
         CheckUpdatesButton.Click += async (_, _) => await CheckAsync();
 
+        BuildFamilyList();
+        FamilyHubButton.Click += (_, _) => OpenUrl(Family.HubUrl);
+
         foreach (var (name, licence, url) in Credits)
         {
             var button = new Button
@@ -79,6 +82,51 @@ public partial class AboutDialog : Window
             var target = url;
             button.Click += (_, _) => OpenUrl(target);
             CreditsList.Children.Add(button);
+        }
+    }
+
+    /// <summary>
+    /// Renders the rest of the Geek range, with DiskGeek removed from its own list.
+    ///
+    /// The data lives in <see cref="Family"/> - one file, carried identically in every app repo -
+    /// rather than being written into this markup, so adding a tool to the range does not mean
+    /// hunting through four About screens. Nothing is fetched to build it; the list ships inside
+    /// the executable and each row simply opens a product page in the browser.
+    /// </summary>
+    private void BuildFamilyList()
+    {
+        foreach (var app in Family.Others("DiskGeek"))
+        {
+            var stack = new StackPanel { Spacing = 1 };
+            stack.Children.Add(new TextBlock
+            {
+                Text = app.Name,
+                FontSize = 12.5,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = new SolidColorBrush(Color.Parse("#38bdf8"))
+            });
+            stack.Children.Add(new TextBlock
+            {
+                Text = app.Blurb,
+                FontSize = 11.5,
+                Foreground = new SolidColorBrush(Color.Parse("#9ca3af")),
+                TextWrapping = TextWrapping.Wrap
+            });
+
+            var button = new Button
+            {
+                Content = stack,
+                Background = Brushes.Transparent,
+                BorderThickness = default,
+                Padding = new Avalonia.Thickness(0, 5),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Cursor = new Cursor(StandardCursorType.Hand)
+            };
+
+            var url = app.ProductUrl;
+            button.Click += (_, _) => OpenUrl(url);
+            FamilyList.Children.Add(button);
         }
     }
 
