@@ -58,6 +58,9 @@
 AppId={{FABE7889-47A7-4E2E-93F6-FE537C5E334D}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+; Stamps the version into DiskGeekSetup.exe's own file properties, so the installer
+; reports the release version in Explorer and the release workflow can verify it.
+VersionInfoVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
