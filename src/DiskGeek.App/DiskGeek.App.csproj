@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,7 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <!-- Shown in the window title (see MainWindowViewModel.AppVersion) so a user can tell at a
          glance whether they're running the latest build - bump this with every release. -->
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <!-- The .exe's own icon - what shows in Explorer, the taskbar, and Alt+Tab on Windows. -->
     <ApplicationIcon>Assets\diskgeek.ico</ApplicationIcon>
     <!-- These flow into the compiled .exe's Win32 version resource, i.e. what shows on the
