@@ -23,19 +23,28 @@ public sealed class TreemapView : Control
     public static readonly StyledProperty<int> MaxItemsProperty =
         AvaloniaProperty.Register<TreemapView, int>(nameof(MaxItems), 60);
 
+    /// <summary>
+    /// Eight hues that stay far enough apart to tell neighbouring blocks apart, drawn from the same
+    /// blue/teal/green/amber family as the rest of the app rather than a stock primary-colour set -
+    /// the treemap is the loudest screen in DiskGeek and was the one that made it look like a
+    /// different product.
+    /// </summary>
     private static readonly IBrush[] Palette =
     {
-        new SolidColorBrush(Color.Parse("#1a73e8")),
-        new SolidColorBrush(Color.Parse("#e8710a")),
-        new SolidColorBrush(Color.Parse("#1e8e3e")),
-        new SolidColorBrush(Color.Parse("#d93025")),
-        new SolidColorBrush(Color.Parse("#9334e6")),
-        new SolidColorBrush(Color.Parse("#12b5cb")),
-        new SolidColorBrush(Color.Parse("#f9ab00")),
-        new SolidColorBrush(Color.Parse("#5f6368")),
+        new SolidColorBrush(Color.Parse("#2E78D8")),
+        new SolidColorBrush(Color.Parse("#17AEB7")),
+        new SolidColorBrush(Color.Parse("#3BA55C")),
+        new SolidColorBrush(Color.Parse("#E0A62B")),
+        new SolidColorBrush(Color.Parse("#5B6EE1")),
+        new SolidColorBrush(Color.Parse("#4E93B8")),
+        new SolidColorBrush(Color.Parse("#B8734A")),
+        new SolidColorBrush(Color.Parse("#6E7A91")),
     };
 
-    private static readonly IPen BorderPen = new Pen(new SolidColorBrush(Color.Parse("#ffffff")), 1.5);
+    // Gutters in the window background rather than white, so the blocks read as one surface.
+    private static readonly IPen BorderPen = new Pen(new SolidColorBrush(Color.Parse("#0A0D16")), 1.5);
+
+    private static readonly IBrush EmptyTextBrush = new SolidColorBrush(Color.Parse("#7C8699"));
 
     private List<(FileSystemNodeViewModel Node, Rect Rect)> _layout = new();
 
@@ -103,7 +112,7 @@ public sealed class TreemapView : Control
                 FlowDirection.LeftToRight,
                 Typeface.Default,
                 13,
-                Brushes.Gray);
+                EmptyTextBrush);
             context.DrawText(message, new Point(8, 8));
             return;
         }
