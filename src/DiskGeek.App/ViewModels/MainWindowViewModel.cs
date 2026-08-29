@@ -115,6 +115,7 @@ public partial class MainWindowViewModel : ObservableObject
         RootNodes.Clear();
         SelectedNode = null;
         OnPropertyChanged(nameof(DetailItems));
+        RefreshShellFigures();
         StatusText = $"Scanning {FolderPath} — starting…";
         ElapsedDisplay = "0s";
         WindowTitle = $"{AppTitle} — Scanning…";
@@ -139,7 +140,7 @@ public partial class MainWindowViewModel : ObservableObject
         try
         {
             var root = await _scanner.ScanAsync(FolderPath, progressReporter, _cts.Token);
-            var rootVm = new FileSystemNodeViewModel(root, root.SizeInBytes);
+            var rootVm = new FileSystemNodeViewModel(root, root.SizeInBytes) { IsExpanded = true };
             RootNodes.Add(rootVm);
             SelectedNode = rootVm;
             OnPropertyChanged(nameof(CanFindDuplicates));
@@ -148,6 +149,7 @@ public partial class MainWindowViewModel : ObservableObject
             Search.SetScanRoot(root);
             Snapshots.SetScanRoot(root);
             OnPropertyChanged(nameof(CanExport));
+            RefreshShellFigures();
             StatusText = root.AccessDenied
                 ? $"Done with some folders skipped (access denied) — {root.FileCount:N0} files, {ByteSizeFormatter.Format(root.SizeInBytes)} total, took {FormatElapsed(_scanStopwatch.Elapsed)}."
                 : $"Done — {root.FileCount:N0} files, {ByteSizeFormatter.Format(root.SizeInBytes)} total, took {FormatElapsed(_scanStopwatch.Elapsed)}.";
@@ -176,12 +178,20 @@ public partial class MainWindowViewModel : ObservableObject
     private void Cancel() => _cts?.Cancel();
 
     [RelayCommand(CanExecute = nameof(CanFindDuplicates))]
-    private Task FindDuplicatesAsync() =>
-        RootNodes.Count > 0 ? Duplicates.RunAsync(RootNodes[0].Model) : Task.CompletedTask;
+    private async Task FindDuplicatesAsync()
+    {
+        if (RootNodes.Count == 0) return;
+        await Duplicates.RunAsync(RootNodes[0].Model);
+        RefreshShellFigures();
+    }
 
     [RelayCommand(CanExecute = nameof(CanFindDuplicates))]
-    private Task FindSimilarImagesAsync() =>
-        RootNodes.Count > 0 ? SimilarImages.RunAsync(RootNodes[0].Model) : Task.CompletedTask;
+    private async Task FindSimilarImagesAsync()
+    {
+        if (RootNodes.Count == 0) return;
+        await SimilarImages.RunAsync(RootNodes[0].Model);
+        RefreshShellFigures();
+    }
 
     /// <summary>
     /// Selects the tree node for <paramref name="target"/> (or its parent folder, for a file
@@ -253,6 +263,7 @@ public partial class MainWindowViewModel : ObservableObject
         RootNodes[0].UpdatePercentBaseRecursive(root.SizeInBytes);
         Search.RemoveResults(deletedNodes);
         OnPropertyChanged(nameof(DetailItems));
+        RefreshShellFigures();
     }
 
     /// <summary>
@@ -281,6 +292,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         Search.RemoveResults(renamedOriginals);
         OnPropertyChanged(nameof(DetailItems));
+        RefreshShellFigures();
     }
 
     /// <summary>
