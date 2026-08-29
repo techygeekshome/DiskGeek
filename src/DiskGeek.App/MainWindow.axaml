@@ -5,12 +5,15 @@
         xmlns:vm="using:DiskGeek.App.ViewModels"
         xmlns:conv="using:DiskGeek.App.Converters"
         xmlns:controls="using:DiskGeek.App.Controls"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="640"
+        mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="940"
         x:Class="DiskGeek.App.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding WindowTitle}"
         Icon="/Assets/diskgeek.ico"
-        Width="1080" Height="680">
+        FontFamily="{StaticResource UiFont}" FontSize="13.5"
+        Background="{StaticResource Navy}"
+        Width="1180" Height="940" MinWidth="860" MinHeight="480"
+        WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <conv:PercentToWidthConverter x:Key="PercentToWidth" MaxWidth="60" />
@@ -21,432 +24,656 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <DockPanel>
-        <!-- Toolbar -->
-        <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SystemBaseLowColor}">
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-                <TextBox Grid.Column="0" Text="{Binding FolderPath}" Watermark="Folder to scan…" VerticalAlignment="Center" Margin="0,0,8,0" />
-                <Button Grid.Column="1" Content="Browse…" Click="OnBrowseClicked" Margin="0,0,8,0" />
-                <Button Grid.Column="2" Content="Scan" Command="{Binding ScanCommand}" Classes="accent" Margin="0,0,8,0" />
-                <Button Grid.Column="3" Content="Cancel" Command="{Binding CancelCommand}" IsEnabled="{Binding IsScanning}" Margin="0,0,8,0" />
-                <Button Grid.Column="4" Content="Permissions…" Click="OnPermissionsClicked" IsEnabled="{Binding SelectedNode, Converter={x:Static ObjectConverters.IsNotNull}}" Margin="0,0,8,0" />
-                <Button Grid.Column="5" Content="Export ▾" IsEnabled="{Binding CanExport}" Margin="0,0,8,0">
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <MenuItem Header="Export to CSV…" Click="OnExportCsvClicked" />
-                            <MenuItem Header="Export to HTML report…" Click="OnExportHtmlClicked" />
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-                <Button Grid.Column="6" Content="Check for Updates…" Command="{Binding Updates.CheckNowCommand}" Margin="0,0,8,0" />
-                <Button Grid.Column="7" Content="About…" Click="OnAboutClicked" />
+    <Grid ColumnDefinitions="224,*">
+
+      <!-- ================================ SIDEBAR ================================ -->
+      <Border Grid.Column="0" Background="{StaticResource Chrome}"
+              BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0">
+        <DockPanel Margin="12,16">
+
+          <StackPanel DockPanel.Dock="Top" Spacing="14">
+
+            <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,2">
+              <Image Source="/Assets/diskgeek.png" Width="38" Height="38" />
+              <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{Binding BrandName}" FontSize="17" FontWeight="Bold" />
+                <TextBlock Text="{Binding BrandBy}" FontSize="11" Foreground="{StaticResource Txt3}" />
+              </StackPanel>
+            </StackPanel>
+
+            <StackPanel Spacing="2">
+          <Button Classes="nav" Classes.on="{Binding IsOverview}" Command="{Binding ShowOverviewCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="▦" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Overview" VerticalAlignment="Center" />
             </Grid>
+          </Button>
+          <Button Classes="nav" Classes.on="{Binding IsExplorer}" Command="{Binding ShowExplorerCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="▤" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Explorer" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+          <Button Classes="nav" Classes.on="{Binding IsTreemap}" Command="{Binding ShowTreemapCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="▣" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Treemap" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+            </StackPanel>
+
+            <StackPanel Spacing="2">
+              <TextBlock Classes="navsection" Text="RECLAIM" />
+          <Button Classes="nav" Classes.on="{Binding IsDuplicates}" Command="{Binding ShowDuplicatesCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="⧉" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Duplicates" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Classes="mono" FontSize="11" VerticalAlignment="Center"
+                         Margin="8,0,0,0" Foreground="{StaticResource GreenLight}" Text="{Binding DuplicateReclaimDisplay}"
+                         IsVisible="{Binding HasDuplicateReclaim}" />
+            </Grid>
+          </Button>
+          <Button Classes="nav" Classes.on="{Binding IsSimilar}" Command="{Binding ShowSimilarCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="◫" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Similar images" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Classes="mono" FontSize="11" VerticalAlignment="Center"
+                         Margin="8,0,0,0" Foreground="{StaticResource GreenLight}" Text="{Binding SimilarReclaimDisplay}"
+                         IsVisible="{Binding HasSimilarReclaim}" />
+            </Grid>
+          </Button>
+            </StackPanel>
+
+            <StackPanel Spacing="2">
+              <TextBlock Classes="navsection" Text="TOOLS" />
+          <Button Classes="nav" Classes.on="{Binding IsSearch}" Command="{Binding ShowSearchCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="⌕" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Search" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+          <Button Classes="nav" Classes.on="{Binding IsSnapshots}" Command="{Binding ShowSnapshotsCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="↻" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Snapshots" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+          <Button Classes="nav" Classes.on="{Binding IsSettings}" Command="{Binding ShowSettingsCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Grid.Column="0" Text="⚙" FontSize="13" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="Settings" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel DockPanel.Dock="Bottom" Spacing="10">
+            <StackPanel Spacing="6">
+              <Button Classes="ghost" Content="Check for updates" Command="{Binding Updates.CheckNowCommand}" />
+              <Button Classes="ghost" Content="About" Click="OnAboutClicked" />
+            </StackPanel>
+            <TextBlock Text="{Binding VersionText}" FontSize="11" Margin="4,0"
+                       Foreground="{StaticResource Txt4}" />
+          </StackPanel>
+
+          <Panel />
+        </DockPanel>
+      </Border>
+
+      <!-- ================================ CONTENT ================================ -->
+      <DockPanel Grid.Column="1">
+
+        <!-- Header: title, the one status line, and at most one secondary plus one primary action -->
+        <Border DockPanel.Dock="Top" BorderBrush="{StaticResource LineSoft}" BorderThickness="0,0,0,1"
+                Padding="26,26,26,15">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
+              <TextBlock Classes="pagetitle" Text="{Binding PageTitle}" />
+              <TextBlock Classes="status" Text="{Binding PageStatus}" TextTrimming="CharacterEllipsis" MaxLines="1" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+              <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsScanning}" Width="120" Height="4"
+                           Foreground="{StaticResource BlueLight}" Background="{StaticResource Line2}"
+                           VerticalAlignment="Center" />
+              <Button Classes="toolbtn" Content="Export" IsEnabled="{Binding CanExport}">
+                <Button.Flyout>
+                  <MenuFlyout>
+                    <MenuItem Header="Export to CSV…" Click="OnExportCsvClicked" />
+                    <MenuItem Header="Export to HTML report…" Click="OnExportHtmlClicked" />
+                  </MenuFlyout>
+                </Button.Flyout>
+              </Button>
+              <Button Classes="toolbtn" Content="Browse…" Click="OnBrowseClicked" />
+              <Button Classes="primary" Content="Scan" Command="{Binding ScanCommand}" />
+            </StackPanel>
+          </Grid>
         </Border>
 
-        <!-- Status bar -->
-        <Border DockPanel.Dock="Bottom" Padding="10,6" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemBaseLowColor}">
-            <Grid ColumnDefinitions="*,Auto,120">
-                <TextBlock Grid.Column="0" Text="{Binding StatusText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                <TextBlock Grid.Column="1" Text="{Binding ElapsedDisplay}" IsVisible="{Binding IsScanning}" Margin="8,0" VerticalAlignment="Center" Foreground="Gray" />
-                <ProgressBar Grid.Column="2" IsIndeterminate="{Binding IsScanning}" IsVisible="{Binding IsScanning}" Height="6" VerticalAlignment="Center" />
-            </Grid>
-        </Border>
-
-        <!-- Body: tree on the left, detail table on the right, with a hard-to-miss scanning banner
-             overlaid on top while a scan is running (this used to be easy to mistake for a hang on
-             a big drive — the status bar update alone wasn't prominent enough). -->
         <Panel>
-            <Grid ColumnDefinitions="320,4,*">
-                <TreeView Grid.Column="0" ItemsSource="{Binding RootNodes}" SelectedItem="{Binding SelectedNode}" Margin="4">
-                    <TreeView.ItemTemplate>
-                        <TreeDataTemplate DataType="vm:FileSystemNodeViewModel" ItemsSource="{Binding Children}">
-                            <Grid ColumnDefinitions="20,*,Auto,60" Margin="0,2">
-                                <TextBlock Grid.Column="0" Text="{Binding Icon}" />
-                                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
-                                <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Margin="6,0" Foreground="Gray" FontSize="11" />
-                                <Border Grid.Column="3" Height="6" CornerRadius="3" Background="{DynamicResource SystemBaseLowColor}" VerticalAlignment="Center">
-                                    <Border HorizontalAlignment="Left" Height="6" CornerRadius="3" Background="#1a73e8"
-                                            Width="{Binding PercentOfRoot, Converter={StaticResource PercentToWidth}}" />
+          <!-- ================================================================ Overview -->
+          <ScrollViewer IsVisible="{Binding IsOverview}" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="26,20" Spacing="16">
+
+              <Border Classes="band" IsVisible="{Binding !HasScan}">
+                <StackPanel Spacing="5">
+                  <TextBlock Text="Nothing scanned yet." FontWeight="SemiBold" FontSize="13" />
+                  <TextBlock Classes="sub" Text="Pick a folder or a whole drive with Browse, then press Scan. Scanning reads your disk and writes nothing - deleting anything is always a separate, confirmed step." />
+                </StackPanel>
+              </Border>
+
+              <Grid ColumnDefinitions="*,*,*,*" IsVisible="{Binding HasScan}">
+                <Border Classes="card" Grid.Column="0" Margin="0,0,6,0" Padding="15,14"
+                        BorderBrush="{StaticResource Blue}" BorderThickness="3,1,1,1">
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="meta" Text="SCANNED" FontWeight="Bold" FontSize="10.5" />
+                    <TextBlock Classes="mono" FontSize="26" FontWeight="Bold" Foreground="{StaticResource Txt}"
+                               Text="{Binding TotalSizeDisplay}" />
+                    <TextBlock Classes="meta" Text="{Binding ScannedSummary}" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                </Border>
+                <Border Classes="card" Grid.Column="1" Margin="6,0" Padding="15,14"
+                        BorderBrush="{StaticResource Green}" BorderThickness="3,1,1,1">
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="meta" Text="COULD BE RECLAIMED" FontWeight="Bold" FontSize="10.5" />
+                    <TextBlock Classes="mono" FontSize="26" FontWeight="Bold" Foreground="{StaticResource GreenLight}"
+                               Text="{Binding TotalReclaimDisplay}" />
+                    <TextBlock Classes="meta" Text="duplicates and similar images" />
+                  </StackPanel>
+                </Border>
+                <Border Classes="card" Grid.Column="2" Margin="6,0" Padding="15,14"
+                        BorderBrush="{StaticResource Teal}" BorderThickness="3,1,1,1">
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="meta" Text="FILES" FontWeight="Bold" FontSize="10.5" />
+                    <TextBlock Classes="mono" FontSize="26" FontWeight="Bold" Foreground="{StaticResource Txt}"
+                               Text="{Binding TotalFiles, StringFormat='{}{0:n0}'}" />
+                    <TextBlock Classes="meta" Text="{Binding TotalFolders, StringFormat='in {0:n0} folders'}" />
+                  </StackPanel>
+                </Border>
+                <Border Classes="card" Grid.Column="3" Margin="6,0,0,0" Padding="15,14"
+                        BorderBrush="{StaticResource Amber}" BorderThickness="3,1,1,1">
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="meta" Text="UNREADABLE" FontWeight="Bold" FontSize="10.5" />
+                    <TextBlock Classes="mono" FontSize="26" FontWeight="Bold" Foreground="{StaticResource Txt}"
+                               Text="{Binding UnreadableCount, StringFormat='{}{0:n0}'}" />
+                    <TextBlock Classes="meta" Text="folders access was denied" />
+                  </StackPanel>
+                </Border>
+              </Grid>
+
+              <Border Classes="card" IsVisible="{Binding HasScan}">
+                <StackPanel>
+                  <Border Classes="cardhead">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <TextBlock Text="Where the space has gone" FontWeight="SemiBold" />
+                      <TextBlock Grid.Column="1" Classes="meta" Text="biggest first" />
+                    </Grid>
+                  </Border>
+                  <ItemsControl ItemsSource="{Binding BiggestChildren}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="vm:FileSystemNodeViewModel">
+                        <Border Classes="row">
+                          <Grid ColumnDefinitions="*,150,110,90">
+                            <StackPanel>
+                              <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Classes="sub" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"
+                                         Text="{Binding FullPath}" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Height="6" CornerRadius="3" VerticalAlignment="Center"
+                                    Background="{StaticResource LineSoft}" Margin="0,0,14,0">
+                              <Border HorizontalAlignment="Left" Height="6" CornerRadius="3"
+                                      Background="{StaticResource Blue}"
+                                      Width="{Binding PercentOfRoot, Converter={StaticResource PercentToWidthWide}}" />
+                            </Border>
+                            <TextBlock Grid.Column="2" Classes="mono" Text="{Binding SizeDisplay}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       Foreground="{StaticResource Txt}" />
+                            <TextBlock Grid.Column="3" Classes="mono" FontSize="12"
+                                       Foreground="{StaticResource Txt3}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       Text="{Binding PercentOfRoot, StringFormat='{}{0:0.0}%'}" />
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+
+          <!-- ================================================================ Explorer -->
+          <Grid IsVisible="{Binding IsExplorer}" ColumnDefinitions="240,4,*" Margin="26,20">
+            <Border Classes="card" Grid.Column="0">
+              <TreeView Grid.Column="0" ItemsSource="{Binding RootNodes}" SelectedItem="{Binding SelectedNode}" Margin="4" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                  <TreeView.ItemContainerTheme>
+                      <ControlTheme TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                          <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                      </ControlTheme>
+                  </TreeView.ItemContainerTheme>
+                  <TreeView.ItemTemplate>
+                      <TreeDataTemplate DataType="vm:FileSystemNodeViewModel" ItemsSource="{Binding Children}">
+                          <!-- Name and size only. The percent bar that used to sit here squeezed the
+                               size figure off the end of a deep row; the detail grid beside it
+                               already shows percent-of-total on its own column. -->
+                          <Grid ColumnDefinitions="20,*,Auto" Margin="0,2">
+                              <TextBlock Grid.Column="0" Text="{Binding Icon}" />
+                              <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
+                              <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Margin="10,0,2,0" Foreground="{StaticResource Txt3}" FontSize="11" VerticalAlignment="Center" />
+                          </Grid>
+                      </TreeDataTemplate>
+                  </TreeView.ItemTemplate>
+              </TreeView>
+            </Border>
+            <GridSplitter Grid.Column="1" Background="{StaticResource Line}" />
+            <Border Classes="card" Grid.Column="2">
+              <DataGrid ItemsSource="{Binding DetailItems}" Margin="1" RowHeight="34"
+                        IsReadOnly="True" GridLinesVisibility="Horizontal" AutoGenerateColumns="False"
+                        CanUserSortColumns="True">
+                  <DataGrid.Columns>
+                      <DataGridTemplateColumn Header="Name" Width="*" MinWidth="150">
+                          <DataGridTemplateColumn.CellTemplate>
+                              <DataTemplate DataType="vm:FileSystemNodeViewModel">
+                                  <StackPanel Orientation="Horizontal" Spacing="6">
+                                      <TextBlock Text="{Binding Icon}" />
+                                      <TextBlock Text="{Binding Name}" />
+                                  </StackPanel>
+                              </DataTemplate>
+                          </DataGridTemplateColumn.CellTemplate>
+                      </DataGridTemplateColumn>
+                      <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="92" />
+                      <DataGridTemplateColumn Header="% of Total" Width="96">
+                          <DataGridTemplateColumn.CellTemplate>
+                              <DataTemplate DataType="vm:FileSystemNodeViewModel">
+                                  <Border Height="10" CornerRadius="3" Background="{StaticResource Line}" VerticalAlignment="Center" Margin="4,0">
+                                      <Border HorizontalAlignment="Left" Height="10" CornerRadius="3" Background="{StaticResource Blue}"
+                                              Width="{Binding PercentOfRoot, Converter={StaticResource PercentToWidthWide}}" />
+                                  </Border>
+                              </DataTemplate>
+                          </DataGridTemplateColumn.CellTemplate>
+                      </DataGridTemplateColumn>
+                      <DataGridTextColumn Header="Files" Binding="{Binding FileCount}" Width="80" />
+                      <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDisplay}" Width="132" />
+                  </DataGrid.Columns>
+              </DataGrid>
+            </Border>
+          </Grid>
+
+          <!-- ================================================================ Treemap -->
+          <Border Classes="card" IsVisible="{Binding IsTreemap}" Margin="26,20">
+            <controls:TreemapView x:Name="Treemap" ItemsSource="{Binding DetailItems}" NodeClicked="OnTreemapNodeClicked" />
+          </Border>
+
+          <!-- ================================================================ Duplicates -->
+          <Border Classes="card" IsVisible="{Binding IsDuplicates}" Margin="26,20">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Line}">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                        <Button Grid.Column="0" Content="Find Duplicates" Command="{Binding FindDuplicatesCommand}" Classes="primary" Margin="0,0,8,0" />
+                        <Button Grid.Column="1" Content="Cancel" Command="{Binding Duplicates.CancelCommand}" IsEnabled="{Binding Duplicates.IsScanning}" Margin="0,0,8,0" />
+                        <TextBlock Grid.Column="2" Text="{Binding Duplicates.StatusText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <ProgressBar Grid.Column="3" IsIndeterminate="True" IsVisible="{Binding Duplicates.IsScanning}" Width="100" Height="6" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <Border DockPanel.Dock="Bottom" Padding="10" BorderThickness="0,1,0,0" BorderBrush="{StaticResource Line}" IsVisible="{Binding Duplicates.HasResults}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0"
+                                   TextTrimming="CharacterEllipsis" MaxLines="1">
+                            <Run Text="Selected: " />
+                            <Run Text="{Binding Duplicates.SelectedBytesDisplay}" FontWeight="Bold" />
+                            <Run Text=" — the oldest copy in each group is unchecked by default; review before deleting." Foreground="{StaticResource Txt3}" />
+                        </TextBlock>
+                        <Button Grid.Column="1" Content="Delete Selected…" Click="OnDeleteSelectedDuplicatesClicked"
+                                IsEnabled="{Binding Duplicates.HasSelection}" Background="{StaticResource Red}" Foreground="{StaticResource Txt}" />
+                    </Grid>
+                </Border>
+
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Duplicates.Groups}" Margin="8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:DuplicateGroupViewModel">
+                                <Border Margin="0,0,0,8" Padding="12" CornerRadius="6" Background="{StaticResource Panel2}">
+                                    <StackPanel Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" FontWeight="Bold">
+                                                <Run Text="{Binding CopyCount}" /><Run Text=" copies · " /><Run Text="{Binding SizeDisplay}" /><Run Text=" each" />
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="1" Foreground="{StaticResource RedLight}" FontWeight="Bold">
+                                                <Run Text="{Binding WastedDisplay}" /><Run Text=" wasted" />
+                                            </TextBlock>
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding Files}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="vm:DuplicateFileEntryViewModel">
+                                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,2">
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding FullPath}" TextTrimming="CharacterEllipsis"
+                                                                   Margin="4,0" VerticalAlignment="Center" ToolTip.Tip="{Binding FullPath}" />
+                                                        <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="{StaticResource Txt3}" Margin="6,0" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Column="3" Text="{Binding ModifiedDisplay}" Foreground="{StaticResource Txt3}" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
                                 </Border>
-                            </Grid>
-                        </TreeDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+          </Border>
 
-                <GridSplitter Grid.Column="1" Background="{DynamicResource SystemBaseLowColor}" />
-
-                <TabControl Grid.Column="2" Margin="4">
-                    <TabItem Header="List">
-                        <DataGrid ItemsSource="{Binding DetailItems}"
-                                  IsReadOnly="True" GridLinesVisibility="Horizontal" AutoGenerateColumns="False"
-                                  CanUserSortColumns="True">
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="Name" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate DataType="vm:FileSystemNodeViewModel">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <TextBlock Text="{Binding Icon}" />
-                                                <TextBlock Text="{Binding Name}" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="100" />
-                                <DataGridTemplateColumn Header="% of Total" Width="160">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate DataType="vm:FileSystemNodeViewModel">
-                                            <Border Height="10" CornerRadius="3" Background="{DynamicResource SystemBaseLowColor}" VerticalAlignment="Center" Margin="4,0">
-                                                <Border HorizontalAlignment="Left" Height="10" CornerRadius="3" Background="#1a73e8"
-                                                        Width="{Binding PercentOfRoot, Converter={StaticResource PercentToWidthWide}}" />
-                                            </Border>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Files" Binding="{Binding FileCount}" Width="80" />
-                                <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDisplay}" Width="150" />
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </TabItem>
-                    <TabItem Header="Treemap">
-                        <controls:TreemapView x:Name="Treemap" ItemsSource="{Binding DetailItems}" NodeClicked="OnTreemapNodeClicked" />
-                    </TabItem>
-                    <TabItem Header="Duplicates">
-                        <TabControl x:Name="DuplicatesModeTabs">
-                            <TabItem Header="Exact Duplicates">
-                                <DockPanel>
-                                    <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SystemBaseLowColor}">
-                                        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
-                                            <Button Grid.Column="0" Content="Find Duplicates" Command="{Binding FindDuplicatesCommand}" Classes="accent" Margin="0,0,8,0" />
-                                            <Button Grid.Column="1" Content="Cancel" Command="{Binding Duplicates.CancelCommand}" IsEnabled="{Binding Duplicates.IsScanning}" Margin="0,0,8,0" />
-                                            <TextBlock Grid.Column="2" Text="{Binding Duplicates.StatusText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                            <ProgressBar Grid.Column="3" IsIndeterminate="True" IsVisible="{Binding Duplicates.IsScanning}" Width="100" Height="6" VerticalAlignment="Center" />
-                                        </Grid>
-                                    </Border>
-
-                                    <Border DockPanel.Dock="Bottom" Padding="10" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemBaseLowColor}" IsVisible="{Binding Duplicates.HasResults}">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0" VerticalAlignment="Center">
-                                                <Run Text="Selected: " />
-                                                <Run Text="{Binding Duplicates.SelectedBytesDisplay}" FontWeight="Bold" />
-                                                <Run Text=" — the oldest copy in each group is unchecked by default; review before deleting." Foreground="Gray" />
-                                            </TextBlock>
-                                            <Button Grid.Column="1" Content="Delete Selected…" Click="OnDeleteSelectedDuplicatesClicked"
-                                                    IsEnabled="{Binding Duplicates.HasSelection}" Background="#d93025" Foreground="White" />
-                                        </Grid>
-                                    </Border>
-
-                                    <ScrollViewer>
-                                        <ItemsControl ItemsSource="{Binding Duplicates.Groups}" Margin="8">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="vm:DuplicateGroupViewModel">
-                                                    <Border Margin="0,0,0,8" Padding="12" CornerRadius="6" Background="{DynamicResource SystemAltMediumLowColor}">
-                                                        <StackPanel Spacing="6">
-                                                            <Grid ColumnDefinitions="*,Auto">
-                                                                <TextBlock Grid.Column="0" FontWeight="Bold">
-                                                                    <Run Text="{Binding CopyCount}" /><Run Text=" copies · " /><Run Text="{Binding SizeDisplay}" /><Run Text=" each" />
-                                                                </TextBlock>
-                                                                <TextBlock Grid.Column="1" Foreground="#d93025" FontWeight="Bold">
-                                                                    <Run Text="{Binding WastedDisplay}" /><Run Text=" wasted" />
-                                                                </TextBlock>
-                                                            </Grid>
-                                                            <ItemsControl ItemsSource="{Binding Files}">
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate DataType="vm:DuplicateFileEntryViewModel">
-                                                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,2">
-                                                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
-                                                                            <TextBlock Grid.Column="1" Text="{Binding FullPath}" TextTrimming="CharacterEllipsis"
-                                                                                       Margin="4,0" VerticalAlignment="Center" ToolTip.Tip="{Binding FullPath}" />
-                                                                            <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="Gray" Margin="6,0" VerticalAlignment="Center" />
-                                                                            <TextBlock Grid.Column="3" Text="{Binding ModifiedDisplay}" Foreground="Gray" VerticalAlignment="Center" />
-                                                                        </Grid>
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ItemsControl>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </ScrollViewer>
-                                </DockPanel>
-                            </TabItem>
-                            <TabItem Header="Similar Images">
-                                <DockPanel>
-                                    <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SystemBaseLowColor}">
-                                        <StackPanel Spacing="8">
-                                            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
-                                                <Button Grid.Column="0" Content="Find Similar Images" Command="{Binding FindSimilarImagesCommand}" Classes="accent" Margin="0,0,8,0" />
-                                                <Button Grid.Column="1" Content="Cancel" Command="{Binding SimilarImages.CancelCommand}" IsEnabled="{Binding SimilarImages.IsScanning}" Margin="0,0,8,0" />
-                                                <TextBlock Grid.Column="2" Text="{Binding SimilarImages.StatusText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                <ProgressBar Grid.Column="3" IsIndeterminate="True" IsVisible="{Binding SimilarImages.IsScanning}" Width="100" Height="6" VerticalAlignment="Center" />
-                                            </Grid>
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <TextBlock Text="Similarity sensitivity:" VerticalAlignment="Center" Foreground="Gray" />
-                                                <Slider Minimum="0" Maximum="20" Value="{Binding SimilarImages.Sensitivity}" Width="160" VerticalAlignment="Center" IsEnabled="{Binding !SimilarImages.IsScanning}" />
-                                                <TextBlock Text="{Binding SimilarImages.Sensitivity}" VerticalAlignment="Center" Width="20" />
-                                                <TextBlock Text="(0 = only near-exact re-saves, higher = looser matching)" Foreground="Gray" FontSize="11" VerticalAlignment="Center" />
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border DockPanel.Dock="Bottom" Padding="10" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemBaseLowColor}" IsVisible="{Binding SimilarImages.HasResults}">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0" VerticalAlignment="Center">
-                                                <Run Text="Selected: " />
-                                                <Run Text="{Binding SimilarImages.SelectedBytesDisplay}" FontWeight="Bold" />
-                                                <Run Text=" — the largest (likely best-quality) copy in each group is unchecked by default; review before deleting." Foreground="Gray" />
-                                            </TextBlock>
-                                            <Button Grid.Column="1" Content="Delete Selected…" Click="OnDeleteSelectedSimilarImagesClicked"
-                                                    IsEnabled="{Binding SimilarImages.HasSelection}" Background="#d93025" Foreground="White" />
-                                        </Grid>
-                                    </Border>
-
-                                    <ScrollViewer>
-                                        <ItemsControl ItemsSource="{Binding SimilarImages.Groups}" Margin="8">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="vm:SimilarImageGroupViewModel">
-                                                    <Border Margin="0,0,0,8" Padding="12" CornerRadius="6" Background="{DynamicResource SystemAltMediumLowColor}">
-                                                        <StackPanel Spacing="6">
-                                                            <Grid ColumnDefinitions="*,Auto">
-                                                                <TextBlock Grid.Column="0" FontWeight="Bold">
-                                                                    <Run Text="{Binding CopyCount}" /><Run Text=" similar-looking images" />
-                                                                </TextBlock>
-                                                                <TextBlock Grid.Column="1" Foreground="#d93025" FontWeight="Bold">
-                                                                    <Run Text="{Binding WastedDisplay}" /><Run Text=" wasted" />
-                                                                </TextBlock>
-                                                            </Grid>
-                                                            <ItemsControl ItemsSource="{Binding Files}">
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate DataType="vm:DuplicateFileEntryViewModel">
-                                                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,2">
-                                                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
-                                                                            <TextBlock Grid.Column="1" Text="{Binding FullPath}" TextTrimming="CharacterEllipsis"
-                                                                                       Margin="4,0" VerticalAlignment="Center" ToolTip.Tip="{Binding FullPath}" />
-                                                                            <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="Gray" Margin="6,0" VerticalAlignment="Center" />
-                                                                            <TextBlock Grid.Column="3" Text="{Binding ModifiedDisplay}" Foreground="Gray" VerticalAlignment="Center" />
-                                                                        </Grid>
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ItemsControl>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </ScrollViewer>
-                                </DockPanel>
-                            </TabItem>
-                        </TabControl>
-                    </TabItem>
-                    <TabItem Header="Search">
-                        <DockPanel>
-                            <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SystemBaseLowColor}">
-                                <StackPanel Spacing="8">
-                                    <Grid ColumnDefinitions="*,Auto,140">
-                                        <TextBox Grid.Column="0" Text="{Binding Search.NamePattern}" Watermark="Name pattern, e.g. *.log or report*" Margin="0,0,8,0" />
-                                        <CheckBox Grid.Column="1" Content="Regex" IsChecked="{Binding Search.UseRegex}" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                        <TextBox Grid.Column="2" Text="{Binding Search.Extensions}" Watermark="Extensions: jpg,png" />
-                                    </Grid>
-                                    <Grid ColumnDefinitions="Auto,100,Auto,100,Auto,Auto,Auto">
-                                        <TextBlock Grid.Column="0" Text="Size (MB):" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <TextBox Grid.Column="1" Text="{Binding Search.MinSizeMb}" Watermark="min" Margin="0,0,6,0" />
-                                        <TextBlock Grid.Column="2" Text="to" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <TextBox Grid.Column="3" Text="{Binding Search.MaxSizeMb}" Watermark="max" Margin="0,0,16,0" />
-                                        <CheckBox Grid.Column="4" Content="Files" IsChecked="{Binding Search.IncludeFiles}" Margin="0,0,12,0" />
-                                        <CheckBox Grid.Column="5" Content="Folders" IsChecked="{Binding Search.IncludeDirectories}" Margin="0,0,12,0" />
-                                    </Grid>
-                                    <Grid ColumnDefinitions="Auto,140,Auto,140,*,Auto,Auto">
-                                        <TextBlock Grid.Column="0" Text="Modified:" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <DatePicker Grid.Column="1" SelectedDate="{Binding Search.ModifiedAfter}" Margin="0,0,6,0" />
-                                        <TextBlock Grid.Column="2" Text="to" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                        <DatePicker Grid.Column="3" SelectedDate="{Binding Search.ModifiedBefore}" Margin="0,0,16,0" />
-                                        <Button Grid.Column="5" Content="Clear" Command="{Binding Search.ClearCommand}" Margin="0,0,8,0" />
-                                        <Button Grid.Column="6" Content="Search" Command="{Binding Search.RunCommand}" Classes="accent" />
-                                    </Grid>
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0" Text="{Binding Search.StatusText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                        <ProgressBar Grid.Column="1" IsIndeterminate="True" IsVisible="{Binding Search.IsSearching}" Width="100" Height="6" VerticalAlignment="Center" />
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <Border DockPanel.Dock="Bottom" Padding="10" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemBaseLowColor}">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Grid.Column="0" Text="Select rows (Ctrl/Shift-click for multiple), then batch-rename them." Foreground="Gray" VerticalAlignment="Center" />
-                                    <Button Grid.Column="1" Content="Batch Rename Selected…" Click="OnBatchRenameSelectedClicked" x:Name="BatchRenameButton" />
-                                </Grid>
-                            </Border>
-
-                            <DataGrid x:Name="SearchResultsGrid" ItemsSource="{Binding Search.Results}" IsReadOnly="True" GridLinesVisibility="Horizontal"
-                                      AutoGenerateColumns="False" CanUserSortColumns="True" SelectionMode="Extended" DoubleTapped="OnSearchResultDoubleTapped">
-                                <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Name" Width="*">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate DataType="vm:SearchResultViewModel">
-                                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                                    <TextBlock Text="{Binding Icon}" />
-                                                    <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FullPath}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Full Path" Binding="{Binding FullPath}" Width="2*" />
-                                    <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="100" />
-                                    <DataGridTextColumn Header="Files" Binding="{Binding FileCount}" Width="70" />
-                                    <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDisplay}" Width="150" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </DockPanel>
-                    </TabItem>
-                    <TabItem Header="Snapshots">
-                        <DockPanel>
-                            <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource SystemBaseLowColor}">
-                                <StackPanel Spacing="8">
-                                    <Grid ColumnDefinitions="Auto,Auto,Auto,*">
-                                        <Button Grid.Column="0" Content="Save Snapshot…" Click="OnSaveSnapshotClicked" IsEnabled="{Binding Snapshots.CanSaveSnapshot}" Margin="0,0,8,0" />
-                                        <Button Grid.Column="1" Content="Load Baseline…" Click="OnLoadBaselineClicked" Margin="0,0,8,0" />
-                                        <Button Grid.Column="2" Content="Compare" Click="OnCompareSnapshotClicked" IsEnabled="{Binding Snapshots.CanCompare}" Classes="accent" Margin="0,0,8,0" />
-                                    </Grid>
-                                    <TextBlock Text="{Binding Snapshots.BaselineLabel}" Foreground="Gray" FontSize="11" IsVisible="{Binding Snapshots.BaselineLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                    <TextBlock Text="{Binding Snapshots.StatusText}" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Border>
-
-                            <Grid IsVisible="{Binding Snapshots.HasComparison}" ColumnDefinitions="*,*,*,*" Margin="8">
-                                <StackPanel Grid.Column="0" Margin="0,0,4,0">
-                                    <TextBlock Text="Added" FontWeight="Bold" Foreground="#1a7f37" Margin="0,0,0,4" />
-                                    <ScrollViewer MaxHeight="400">
-                                        <ItemsControl ItemsSource="{Binding Snapshots.Added}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="vm:SnapshotChangeViewModel">
-                                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
-                                                        <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
-                                                        <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="Gray" FontSize="11" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </ScrollViewer>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="4,0">
-                                    <TextBlock Text="Removed" FontWeight="Bold" Foreground="#d93025" Margin="0,0,0,4" />
-                                    <ScrollViewer MaxHeight="400">
-                                        <ItemsControl ItemsSource="{Binding Snapshots.Removed}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="vm:SnapshotChangeViewModel">
-                                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
-                                                        <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
-                                                        <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="Gray" FontSize="11" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </ScrollViewer>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Margin="4,0">
-                                    <TextBlock Margin="0,0,0,4">
-                                        <Run Text="Changed" FontWeight="Bold" />
-                                        <Run Text=" (net " /><Run Text="{Binding Snapshots.NetChangeDisplay}" FontWeight="Bold" /><Run Text=")" />
-                                    </TextBlock>
-                                    <ScrollViewer MaxHeight="400">
-                                        <ItemsControl ItemsSource="{Binding Snapshots.Changed}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="vm:SnapshotChangeViewModel">
-                                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
-                                                        <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
-                                                        <TextBlock Grid.Column="2" Text="{Binding DeltaDisplay}" Foreground="Gray" FontSize="11" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </ScrollViewer>
-                                </StackPanel>
-                                <StackPanel Grid.Column="3" Margin="4,0,0,0">
-                                    <TextBlock Text="Moved / Renamed" FontWeight="Bold" Foreground="#8a6d00" Margin="0,0,0,4" />
-                                    <ScrollViewer MaxHeight="400">
-                                        <ItemsControl ItemsSource="{Binding Snapshots.Moved}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="vm:SnapshotMoveViewModel">
-                                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2" ToolTip.Tip="{Binding PathTooltip}">
-                                                        <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
-                                                        <StackPanel Grid.Column="1">
-                                                            <TextBlock Text="{Binding NameDisplay}" TextTrimming="CharacterEllipsis" />
-                                                            <TextBlock Text="{Binding KindDisplay}" Foreground="Gray" FontSize="10" />
-                                                        </StackPanel>
-                                                        <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="Gray" FontSize="11" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </ScrollViewer>
-                                </StackPanel>
-                            </Grid>
-                        </DockPanel>
-                    </TabItem>
-                </TabControl>
-            </Grid>
-
-            <!-- All floating banners stack together at the top of the content area rather than each
-                 being independently positioned - a tab's own bottom-docked content (e.g. the
-                 Duplicates/Similar Images "Delete Selected" bar) lives in this same body region, so
-                 anchoring a banner to the bottom risked overlapping it. Stacking vertically here
-                 means each visible banner claims its own space and nothing overlaps, regardless of
-                 which combination happens to be showing at once. -->
-            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="16" Spacing="8">
-
-                <!-- Scanning banner: unmissable, with its own Cancel button so the user never has to
-                     wonder whether anything is happening. -->
-                <Border IsVisible="{Binding IsScanning}"
-                        Background="#1a73e8" CornerRadius="8" Padding="16,12"
-                        BoxShadow="0 4 16 0 #40000000">
+          <!-- ================================================================ Similar images -->
+          <Border Classes="card" IsVisible="{Binding IsSimilar}" Margin="26,20">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Line}">
                     <StackPanel Spacing="8">
-                        <Grid ColumnDefinitions="*,Auto,Auto">
-                            <TextBlock Grid.Column="0" Text="{Binding StatusText}" Foreground="White" FontWeight="Bold" FontSize="14"
-                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="{Binding ElapsedDisplay}" Foreground="#dbe6ff" Margin="12,0" VerticalAlignment="Center" />
-                            <Button Grid.Column="2" Content="Cancel" Command="{Binding CancelCommand}" />
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                            <Button Grid.Column="0" Content="Find Similar Images" Command="{Binding FindSimilarImagesCommand}" Classes="primary" Margin="0,0,8,0" />
+                            <Button Grid.Column="1" Content="Cancel" Command="{Binding SimilarImages.CancelCommand}" IsEnabled="{Binding SimilarImages.IsScanning}" Margin="0,0,8,0" />
+                            <TextBlock Grid.Column="2" Text="{Binding SimilarImages.StatusText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            <ProgressBar Grid.Column="3" IsIndeterminate="True" IsVisible="{Binding SimilarImages.IsScanning}" Width="100" Height="6" VerticalAlignment="Center" />
                         </Grid>
-                        <ProgressBar IsIndeterminate="True" Height="4" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Similarity sensitivity:" VerticalAlignment="Center" Foreground="{StaticResource Txt3}" />
+                            <Slider Minimum="0" Maximum="20" Value="{Binding SimilarImages.Sensitivity}" Width="160" VerticalAlignment="Center" IsEnabled="{Binding !SimilarImages.IsScanning}" />
+                            <TextBlock Text="{Binding SimilarImages.Sensitivity}" VerticalAlignment="Center" Width="20" />
+                            <TextBlock Text="(0 = only near-exact re-saves, higher = looser matching)" Foreground="{StaticResource Txt3}" FontSize="11" VerticalAlignment="Center" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- Update-available banner: stays up until explicitly dismissed or the download
-                     link is followed - unlike the scanning banner, this isn't tied to a transient
-                     in-progress operation, so it shouldn't disappear on its own. -->
-                <Border IsVisible="{Binding Updates.UpdateAvailable}"
-                        Background="#1a7f37" CornerRadius="8" Padding="16,12"
-                        BoxShadow="0 4 16 0 #40000000">
-                    <Grid ColumnDefinitions="*,Auto,Auto">
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock FontWeight="Bold" Foreground="White" FontSize="14">
-                                <Run Text="A new version is available" />
-                                <Run Text=" (" /><Run Text="{Binding Updates.LatestVersionDisplay}" /><Run Text=")" />
-                            </TextBlock>
-                            <TextBlock Text="{Binding Updates.AboutText}" Foreground="#dcf0e3" FontSize="12"
-                                       TextTrimming="CharacterEllipsis" IsVisible="{Binding Updates.AboutText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                        </StackPanel>
-                        <Button Grid.Column="1" Content="Download" Click="OnDownloadUpdateClicked" Margin="12,0,8,0" Classes="accent" />
-                        <Button Grid.Column="2" Content="Dismiss" Command="{Binding Updates.DismissCommand}" />
+                <Border DockPanel.Dock="Bottom" Padding="10" BorderThickness="0,1,0,0" BorderBrush="{StaticResource Line}" IsVisible="{Binding SimilarImages.HasResults}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0"
+                                   TextTrimming="CharacterEllipsis" MaxLines="1">
+                            <Run Text="Selected: " />
+                            <Run Text="{Binding SimilarImages.SelectedBytesDisplay}" FontWeight="Bold" />
+                            <Run Text=" — the largest (likely best-quality) copy in each group is unchecked by default; review before deleting." Foreground="{StaticResource Txt3}" />
+                        </TextBlock>
+                        <Button Grid.Column="1" Content="Delete Selected…" Click="OnDeleteSelectedSimilarImagesClicked"
+                                IsEnabled="{Binding SimilarImages.HasSelection}" Background="{StaticResource Red}" Foreground="{StaticResource Txt}" />
                     </Grid>
                 </Border>
 
-                <!-- Result of an explicit "Check for Updates" click when nothing was found (either
-                     already up to date, or the check itself failed) - the silent startup check never
-                     shows this, since "no update / couldn't check" isn't worth interrupting anyone
-                     for unless they specifically asked. -->
-                <Border IsVisible="{Binding Updates.ShowStatusMessage}"
-                        Background="#3a3f4b" CornerRadius="8" Padding="16,12"
-                        BoxShadow="0 4 16 0 #40000000">
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding SimilarImages.Groups}" Margin="8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:SimilarImageGroupViewModel">
+                                <Border Margin="0,0,0,8" Padding="12" CornerRadius="6" Background="{StaticResource Panel2}">
+                                    <StackPanel Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" FontWeight="Bold">
+                                                <Run Text="{Binding CopyCount}" /><Run Text=" similar-looking images" />
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="1" Foreground="{StaticResource RedLight}" FontWeight="Bold">
+                                                <Run Text="{Binding WastedDisplay}" /><Run Text=" wasted" />
+                                            </TextBlock>
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding Files}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="vm:DuplicateFileEntryViewModel">
+                                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,2">
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding FullPath}" TextTrimming="CharacterEllipsis"
+                                                                   Margin="4,0" VerticalAlignment="Center" ToolTip.Tip="{Binding FullPath}" />
+                                                        <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="{StaticResource Txt3}" Margin="6,0" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Column="3" Text="{Binding ModifiedDisplay}" Foreground="{StaticResource Txt3}" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+          </Border>
+
+          <!-- ================================================================ Search -->
+          <Border Classes="card" IsVisible="{Binding IsSearch}" Margin="26,20">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Line}">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto,180">
+                            <TextBox Grid.Column="0" Text="{Binding Search.NamePattern}" Watermark="Name pattern, e.g. *.log or report*" Margin="0,0,8,0" />
+                            <CheckBox Grid.Column="1" Content="Regex" IsChecked="{Binding Search.UseRegex}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Grid.Column="2" Text="{Binding Search.Extensions}" Watermark="Extensions: jpg,png" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,100,Auto,100,Auto,Auto,Auto">
+                            <TextBlock Grid.Column="0" Text="Size (MB):" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBox Grid.Column="1" Text="{Binding Search.MinSizeMb}" Watermark="min" Margin="0,0,6,0" />
+                            <TextBlock Grid.Column="2" Text="to" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBox Grid.Column="3" Text="{Binding Search.MaxSizeMb}" Watermark="max" Margin="0,0,16,0" />
+                            <CheckBox Grid.Column="4" Content="Files" IsChecked="{Binding Search.IncludeFiles}" Margin="0,0,12,0" />
+                            <CheckBox Grid.Column="5" Content="Folders" IsChecked="{Binding Search.IncludeDirectories}" Margin="0,0,12,0" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,140,Auto,140,*,Auto,Auto">
+                            <TextBlock Grid.Column="0" Text="Modified:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <DatePicker Grid.Column="1" SelectedDate="{Binding Search.ModifiedAfter}" Margin="0,0,6,0" />
+                            <TextBlock Grid.Column="2" Text="to" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <DatePicker Grid.Column="3" SelectedDate="{Binding Search.ModifiedBefore}" Margin="0,0,16,0" />
+                            <Button Grid.Column="5" Content="Clear" Command="{Binding Search.ClearCommand}" Margin="0,0,8,0" />
+                            <Button Grid.Column="6" Content="Search" Command="{Binding Search.RunCommand}" Classes="primary" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding Search.StatusText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <ProgressBar Grid.Column="1" IsIndeterminate="True" IsVisible="{Binding Search.IsSearching}" Width="100" Height="6" VerticalAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border DockPanel.Dock="Bottom" Padding="10" BorderThickness="0,1,0,0" BorderBrush="{StaticResource Line}">
                     <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Grid.Column="0" Text="{Binding Updates.StatusText}" Foreground="White" FontSize="13"
-                                   TextWrapping="Wrap" VerticalAlignment="Center" />
-                        <Button Grid.Column="1" Content="Dismiss" Command="{Binding Updates.DismissStatusMessageCommand}" Margin="12,0,0,0" />
+                        <TextBlock Grid.Column="0" Text="Select rows (Ctrl/Shift-click for multiple), then batch-rename them." Foreground="{StaticResource Txt3}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Content="Batch Rename Selected…" Click="OnBatchRenameSelectedClicked" x:Name="BatchRenameButton" />
                     </Grid>
                 </Border>
+
+                <DataGrid x:Name="SearchResultsGrid" ItemsSource="{Binding Search.Results}" IsReadOnly="True" GridLinesVisibility="Horizontal"
+                          AutoGenerateColumns="False" CanUserSortColumns="True" SelectionMode="Extended" DoubleTapped="OnSearchResultDoubleTapped">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Name" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="vm:SearchResultViewModel">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{Binding Icon}" />
+                                        <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding FullPath}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Full Path" Binding="{Binding FullPath}" Width="2*" />
+                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="90" />
+                        <DataGridTextColumn Header="Files" Binding="{Binding FileCount}" Width="72" />
+                        <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDisplay}" Width="118" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+          </Border>
+
+          <!-- ================================================================ Snapshots -->
+          <Border Classes="card" IsVisible="{Binding IsSnapshots}" Margin="26,20">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Line}">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto,*">
+                            <Button Grid.Column="0" Content="Save Snapshot…" Click="OnSaveSnapshotClicked" IsEnabled="{Binding Snapshots.CanSaveSnapshot}" Margin="0,0,8,0" />
+                            <Button Grid.Column="1" Content="Load Baseline…" Click="OnLoadBaselineClicked" Margin="0,0,8,0" />
+                            <Button Grid.Column="2" Content="Compare" Click="OnCompareSnapshotClicked" IsEnabled="{Binding Snapshots.CanCompare}" Classes="primary" Margin="0,0,8,0" />
+                        </Grid>
+                        <TextBlock Text="{Binding Snapshots.BaselineLabel}" Foreground="{StaticResource Txt3}" FontSize="11" IsVisible="{Binding Snapshots.BaselineLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <TextBlock Text="{Binding Snapshots.StatusText}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Grid IsVisible="{Binding Snapshots.HasComparison}" ColumnDefinitions="*,*,*,*" Margin="8">
+                    <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                        <TextBlock Text="Added" FontWeight="Bold" Foreground="{StaticResource GreenLight}" Margin="0,0,0,4" />
+                        <ScrollViewer MaxHeight="400">
+                            <ItemsControl ItemsSource="{Binding Snapshots.Added}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:SnapshotChangeViewModel">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
+                                            <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
+                                            <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="{StaticResource Txt3}" FontSize="11" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="4,0">
+                        <TextBlock Text="Removed" FontWeight="Bold" Foreground="{StaticResource RedLight}" Margin="0,0,0,4" />
+                        <ScrollViewer MaxHeight="400">
+                            <ItemsControl ItemsSource="{Binding Snapshots.Removed}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:SnapshotChangeViewModel">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
+                                            <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
+                                            <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="{StaticResource Txt3}" FontSize="11" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Margin="4,0">
+                        <TextBlock Margin="0,0,0,4">
+                            <Run Text="Changed" FontWeight="Bold" />
+                            <Run Text=" (net " /><Run Text="{Binding Snapshots.NetChangeDisplay}" FontWeight="Bold" /><Run Text=")" />
+                        </TextBlock>
+                        <ScrollViewer MaxHeight="400">
+                            <ItemsControl ItemsSource="{Binding Snapshots.Changed}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:SnapshotChangeViewModel">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
+                                            <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FullPath}" />
+                                            <TextBlock Grid.Column="2" Text="{Binding DeltaDisplay}" Foreground="{StaticResource Txt3}" FontSize="11" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                    <StackPanel Grid.Column="3" Margin="4,0,0,0">
+                        <TextBlock Text="Moved / Renamed" FontWeight="Bold" Foreground="{StaticResource Amber}" Margin="0,0,0,4" />
+                        <ScrollViewer MaxHeight="400">
+                            <ItemsControl ItemsSource="{Binding Snapshots.Moved}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:SnapshotMoveViewModel">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2" ToolTip.Tip="{Binding PathTooltip}">
+                                            <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,4,0" />
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding NameDisplay}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding KindDisplay}" Foreground="{StaticResource Txt3}" FontSize="10" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="2" Text="{Binding SizeDisplay}" Foreground="{StaticResource Txt3}" FontSize="11" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+          </Border>
+
+          <!-- ================================================================ Settings -->
+          <ScrollViewer IsVisible="{Binding IsSettings}" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="26,20" Spacing="16" MaxWidth="820" HorizontalAlignment="Left">
+              <Border Classes="band">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="What DiskGeek will not do." FontWeight="SemiBold" FontSize="13" />
+                  <TextBlock Classes="sub" Text="Scanning measures and changes nothing. Nothing is ever deleted without you ticking it and confirming, and nothing is ticked for you." />
+                </StackPanel>
+              </Border>
+
+              <Border Classes="card">
+                <StackPanel>
+                  <Border Classes="cardhead"><TextBlock Text="Deleting" FontWeight="SemiBold" /></Border>
+                  <Border Classes="row">
+                    <StackPanel>
+                      <TextBlock Text="Deleted files go to the Recycle Bin" FontWeight="SemiBold" />
+                      <TextBlock Classes="sub" Margin="0,3,0,0" Text="So a mistake is recoverable. DiskGeek never empties the Recycle Bin for you." />
+                    </StackPanel>
+                  </Border>
+                  <Border Classes="row">
+                    <StackPanel>
+                      <TextBlock Text="No scheduled or unattended deletion" FontWeight="SemiBold" />
+                      <TextBlock Classes="sub" Margin="0,3,0,0" Text="The command line can run a scan and write a report. It has no way to delete anything." />
+                    </StackPanel>
+                  </Border>
+                  <Border Classes="row" BorderThickness="0">
+                    <StackPanel>
+                      <TextBlock Text="No registry cleaning, no system tuning" FontWeight="SemiBold" />
+                      <TextBlock Classes="sub" Margin="0,3,0,0" Text="DiskGeek reports on files and folders. That is the whole job." />
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+              </Border>
             </StackPanel>
+          </ScrollViewer>
+
+          <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="16" Spacing="8">
+
+              <!-- Scanning banner: unmissable, with its own Cancel button so the user never has to
+                   wonder whether anything is happening. -->
+              <Border IsVisible="{Binding IsScanning}"
+                      Background="{StaticResource Blue}" CornerRadius="8" Padding="16,12"
+                      BoxShadow="0 4 16 0 #40000000">
+                  <StackPanel Spacing="8">
+                      <Grid ColumnDefinitions="*,Auto,Auto">
+                          <TextBlock Grid.Column="0" Text="{Binding StatusText}" Foreground="White" FontWeight="Bold" FontSize="14"
+                                     TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                          <TextBlock Grid.Column="1" Text="{Binding ElapsedDisplay}" Foreground="{StaticResource BlueLight}" Margin="12,0" VerticalAlignment="Center" />
+                          <Button Grid.Column="2" Content="Cancel" Command="{Binding CancelCommand}" />
+                      </Grid>
+                      <ProgressBar IsIndeterminate="True" Height="4" />
+                  </StackPanel>
+              </Border>
+
+              <!-- Update-available banner: stays up until explicitly dismissed or the download
+                   link is followed - unlike the scanning banner, this isn't tied to a transient
+                   in-progress operation, so it shouldn't disappear on its own. -->
+              <Border IsVisible="{Binding Updates.UpdateAvailable}"
+                      Background="{StaticResource Green}" CornerRadius="8" Padding="16,12"
+                      BoxShadow="0 4 16 0 #40000000">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                      <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                          <TextBlock FontWeight="Bold" Foreground="White" FontSize="14">
+                              <Run Text="A new version is available" />
+                              <Run Text=" (" /><Run Text="{Binding Updates.LatestVersionDisplay}" /><Run Text=")" />
+                          </TextBlock>
+                          <TextBlock Text="{Binding Updates.AboutText}" Foreground="{StaticResource GreenLight}" FontSize="12"
+                                     TextTrimming="CharacterEllipsis" IsVisible="{Binding Updates.AboutText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                      </StackPanel>
+                      <Button Grid.Column="1" Content="Download" Click="OnDownloadUpdateClicked" Margin="12,0,8,0" Classes="primary" />
+                      <Button Grid.Column="2" Content="Dismiss" Command="{Binding Updates.DismissCommand}" />
+                  </Grid>
+              </Border>
+
+              <!-- Result of an explicit "Check for Updates" click when nothing was found (either
+                   already up to date, or the check itself failed) - the silent startup check never
+                   shows this, since "no update / couldn't check" isn't worth interrupting anyone
+                   for unless they specifically asked. -->
+              <Border IsVisible="{Binding Updates.ShowStatusMessage}"
+                      Background="{StaticResource Panel2}" CornerRadius="8" Padding="16,12"
+                      BoxShadow="0 4 16 0 #40000000">
+                  <Grid ColumnDefinitions="*,Auto">
+                      <TextBlock Grid.Column="0" Text="{Binding Updates.StatusText}" Foreground="White" FontSize="13"
+                                 TextWrapping="Wrap" VerticalAlignment="Center" />
+                      <Button Grid.Column="1" Content="Dismiss" Command="{Binding Updates.DismissStatusMessageCommand}" Margin="12,0,0,0" />
+                  </Grid>
+              </Border>
+          </StackPanel>
         </Panel>
-    </DockPanel>
+      </DockPanel>
+    </Grid>
 </Window>
