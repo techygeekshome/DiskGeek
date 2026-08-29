@@ -28,17 +28,10 @@ public partial class AboutDialog : Window
     private const string DonateUrl = "https://ko-fi.com/techygeekshome";
 
     /// <summary>
-    /// Everything third-party that ships inside the binary. Listing it is partly courtesy and
-    /// partly practical: DiskGeek is proprietary freeware, so the one question a cautious
-    /// administrator asks is what else is in there.
+    /// The organisation page, offered as one more button so the range list always squares off
+    /// into an even grid however many apps there happen to be.
     /// </summary>
-    private static readonly (string Name, string Licence, string Url)[] Credits =
-    {
-        ("Avalonia", "MIT", "https://avaloniaui.net"),
-        ("CommunityToolkit.Mvvm", "MIT", "https://github.com/CommunityToolkit/dotnet"),
-        ("Inter typeface", "SIL Open Font License 1.1", "https://rsms.me/inter/"),
-        (".NET 8", "MIT", "https://dotnet.microsoft.com")
-    };
+    private const string GitHubProfileUrl = "https://github.com/techygeekshome";
 
     private readonly UpdateCheckViewModel _updates;
     private bool _checking;
@@ -68,66 +61,61 @@ public partial class AboutDialog : Window
         CheckUpdatesButton.Click += async (_, _) => await CheckAsync();
 
         BuildFamilyList();
+        GitHubProfileButton.Click += (_, _) => OpenUrl(GitHubProfileUrl);
         FamilyHubButton.Click += (_, _) => OpenUrl(Family.HubUrl);
-
-        foreach (var (name, licence, url) in Credits)
-        {
-            var button = new Button
-            {
-                Content = $"{name} — {licence}",
-                Classes = { "credit" },
-                Cursor = new Cursor(StandardCursorType.Hand),
-                HorizontalAlignment = HorizontalAlignment.Left
-            };
-            var target = url;
-            button.Click += (_, _) => OpenUrl(target);
-            CreditsList.Children.Add(button);
-        }
     }
 
     /// <summary>
-    /// Renders the rest of the Geek range, with DiskGeek removed from its own list.
+    /// Renders the rest of the Geek range as a two-column grid of buttons, DiskGeek removed
+    /// from its own list, each one opening that app's page on the website rather than its
+    /// repository - a visitor wants the product page, not the source.
     ///
     /// The data lives in <see cref="Family"/> - one file, carried identically in every app repo -
     /// rather than being written into this markup, so adding a tool to the range does not mean
     /// hunting through four About screens. Nothing is fetched to build it; the list ships inside
-    /// the executable and each row simply opens a product page in the browser.
+    /// the executable.
+    ///
+    /// An odd number of apps would leave a hole in the second column, so in that case the GitHub
+    /// profile button fills it and the separate full-width button below is hidden. With an even
+    /// number the grid is already square and that button stays where it is.
     /// </summary>
     private void BuildFamilyList()
     {
-        foreach (var app in Family.Others("DiskGeek"))
+        var others = Family.Others("DiskGeek");
+
+        for (var i = 0; i < others.Count; i++)
         {
-            var stack = new StackPanel { Spacing = 1 };
-            stack.Children.Add(new TextBlock
-            {
-                Text = app.Name,
-                FontSize = 12.5,
-                FontWeight = FontWeight.SemiBold,
-                Foreground = new SolidColorBrush(Color.Parse("#38bdf8"))
-            });
-            stack.Children.Add(new TextBlock
-            {
-                Text = app.Blurb,
-                FontSize = 11.5,
-                Foreground = new SolidColorBrush(Color.Parse("#9ca3af")),
-                TextWrapping = TextWrapping.Wrap
-            });
-
-            var button = new Button
-            {
-                Content = stack,
-                Background = Brushes.Transparent,
-                BorderThickness = default,
-                Padding = new Avalonia.Thickness(0, 5),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = HorizontalAlignment.Left,
-                Cursor = new Cursor(StandardCursorType.Hand)
-            };
-
-            var url = app.ProductUrl;
-            button.Click += (_, _) => OpenUrl(url);
-            FamilyList.Children.Add(button);
+            FamilyGrid.Children.Add(FamilyButton(others[i].Name, others[i].ProductUrl, i));
         }
+
+        if (others.Count % 2 == 1)
+        {
+            FamilyGrid.Children.Add(
+                FamilyButton("All our code on GitHub", GitHubProfileUrl, others.Count));
+            GitHubProfileButton.IsVisible = false;
+        }
+    }
+
+    /// <summary>
+    /// One tile in the range grid. The margin alternates so the gutter sits between the columns
+    /// rather than outside them, which UniformGrid will not do on its own.
+    /// </summary>
+    private static Button FamilyButton(string text, string url, int index)
+    {
+        var button = new Button
+        {
+            Content = text,
+            Classes = { "ghost" },
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            Cursor = new Cursor(StandardCursorType.Hand),
+            Margin = index % 2 == 0
+                ? new Avalonia.Thickness(0, 0, 4, 8)
+                : new Avalonia.Thickness(4, 0, 0, 8)
+        };
+
+        button.Click += (_, _) => OpenUrl(url);
+        return button;
     }
 
     /// <summary>
