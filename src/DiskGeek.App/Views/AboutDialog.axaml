@@ -5,29 +5,28 @@
         Width="520" SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        Background="#0b0b0d"
+        Background="{StaticResource Navy}"
         Icon="/Assets/diskgeek.ico">
 
   <!--
-    Deliberately self-contained styling rather than inherited theme colours. This dialog is the
-    one place a user goes to check what the app is and who made it, so it has to look like the
-    rest of the Geek range even if the host theme changes underneath it. The palette is the same
-    one the product pages use: #0b0b0d page, #111113 card, #1f1f22 border, #38bdf8 accent.
+    Styled from the shared house tokens (Themes/Dark.axaml) rather than a second hardcoded
+    palette. This dialog is the one place a user goes to check what the app is and who made it,
+    so going from the navy shell into a near-black dialog was the most visible remaining seam.
   -->
   <Window.Styles>
     <Style Selector="TextBlock.name">
       <Setter Property="FontSize" Value="26" />
       <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="Foreground" Value="#e5e7eb" />
+      <Setter Property="Foreground" Value="{StaticResource Txt}" />
     </Style>
     <Style Selector="TextBlock.tag">
       <Setter Property="FontSize" Value="13" />
-      <Setter Property="Foreground" Value="#38bdf8" />
+      <Setter Property="Foreground" Value="{StaticResource BlueLight}" />
       <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector="TextBlock.body">
       <Setter Property="FontSize" Value="12" />
-      <Setter Property="Foreground" Value="#9ca3af" />
+      <Setter Property="Foreground" Value="{StaticResource Txt3}" />
       <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector="Button.kofi">
@@ -35,31 +34,31 @@
       <Setter Property="Foreground" Value="#ffffff" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Padding" Value="16,9" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="7" />
     </Style>
     <Style Selector="Button.kofi:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="#e54e4b" />
       <Setter Property="TextBlock.Foreground" Value="#ffffff" />
     </Style>
     <Style Selector="Button.accent">
-      <Setter Property="Background" Value="#38bdf8" />
-      <Setter Property="Foreground" Value="#0b0b0d" />
+      <Setter Property="Background" Value="{StaticResource Blue}" />
+      <Setter Property="Foreground" Value="{StaticResource Txt}" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Padding" Value="16,9" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="7" />
     </Style>
     <Style Selector="Button.ghost">
-      <Setter Property="Background" Value="#1a1a1e" />
-      <Setter Property="Foreground" Value="#e5e7eb" />
-      <Setter Property="BorderBrush" Value="#1f1f22" />
+      <Setter Property="Background" Value="{StaticResource ButtonBg}" />
+      <Setter Property="Foreground" Value="{StaticResource Txt}" />
+      <Setter Property="BorderBrush" Value="{StaticResource Line}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Padding" Value="16,9" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="7" />
     </Style>
     <Style Selector="Button.credit">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Foreground" Value="#9ca3af" />
+      <Setter Property="Foreground" Value="{StaticResource Txt3}" />
       <Setter Property="Padding" Value="0,1" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="Cursor" Value="Hand" />
@@ -67,7 +66,7 @@
     </Style>
     <Style Selector="Button.credit:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="TextBlock.Foreground" Value="#38bdf8" />
+      <Setter Property="TextBlock.Foreground" Value="{StaticResource BlueLight}" />
     </Style>
   </Window.Styles>
 
@@ -82,8 +81,8 @@
       </StackPanel>
     </StackPanel>
 
-    <Border Background="#111113" BorderBrush="#1f1f22" BorderThickness="1"
-            CornerRadius="16" Padding="18">
+    <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+            CornerRadius="7" Padding="18">
       <StackPanel Spacing="10">
         <TextBlock Classes="body"
                    Text="Scan any folder or drive, find exact and near-duplicate files quietly eating space, search and batch-rename, compare snapshots over time, and schedule unattended reports." />
@@ -91,8 +90,8 @@
       </StackPanel>
     </Border>
 
-    <Border Background="#111113" BorderBrush="#1f1f22" BorderThickness="1"
-            CornerRadius="16" Padding="18">
+    <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+            CornerRadius="7" Padding="18">
       <StackPanel Spacing="8">
         <UniformGrid Columns="2">
           <Button x:Name="WebsiteButton" Classes="ghost" Content="Website" Margin="0,0,4,0"
@@ -111,11 +110,11 @@
       </StackPanel>
     </Border>
 
-    <Border Background="#111113" BorderBrush="#1f1f22" BorderThickness="1"
-            CornerRadius="16" Padding="18">
+    <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+            CornerRadius="7" Padding="18">
       <StackPanel Spacing="8">
         <TextBlock Classes="body" Text="More from TechyGeeksHome"
-                   FontWeight="SemiBold" Foreground="#e5e7eb" Margin="0,0,0,2" />
+                   FontWeight="SemiBold" Foreground="{StaticResource Txt}" Margin="0,0,0,2" />
 
         <!--
           One button per app, filled in by BuildFamilyList. Two columns, and the GitHub

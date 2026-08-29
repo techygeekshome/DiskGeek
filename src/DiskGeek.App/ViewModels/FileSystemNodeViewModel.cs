@@ -26,6 +26,18 @@ public sealed class FileSystemNodeViewModel : ObservableObject
 
     private readonly PercentBaseHolder _percentBase;
     private ObservableCollection<FileSystemNodeViewModel>? _children;
+    private bool _isExpanded;
+
+    /// <summary>
+    /// Whether this node is open in the Explorer tree. Two-way bound by the TreeView's item
+    /// container, so the scan can open the root on completion rather than leaving the user
+    /// looking at a single collapsed row.
+    /// </summary>
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set => SetProperty(ref _isExpanded, value);
+    }
 
     public FileSystemNodeViewModel(FileSystemNode model, long percentBaseBytes)
         : this(model, new PercentBaseHolder { Value = percentBaseBytes > 0 ? percentBaseBytes : model.SizeInBytes })
