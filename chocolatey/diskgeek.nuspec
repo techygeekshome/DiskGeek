@@ -2,32 +2,29 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>diskgeek</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <title>DiskGeek</title>
     <authors>TechyGeeksHome</authors>
     <owners>techygeekshome</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>https://github.com/techygeekshome/DiskGeek/blob/main/LICENSE</licenseUrl>
     <projectUrl>https://techygeekshome.info/diskgeek/</projectUrl>
-    <iconUrl>https://cdn.jsdelivr.net/gh/techygeekshome/DiskGeek@11c9cc15550f14f8a2ea031c28e6799b115d83a5/icons/diskgeek.png</iconUrl>
-    <description>DiskGeek scans your drives and shows exactly what is eating your space, with both a
-list view and a treemap view of disk usage.
+    <iconUrl>https://cdn.jsdelivr.net/gh/techygeekshome/DiskGeek@f3bd80c3549a34bec0a42f942a7bc01ab8b1809d/icons/diskgeek.png</iconUrl>
+    <description>DiskGeek shows what is actually taking up the space on a drive, as a sortable tree rather than a
+picture you have to interpret.
 
-* Find exact duplicates, and near-duplicates using perceptual hashing, including similar images
-* Full-text search across scan results
-* Snapshot comparison, so you can see what changed between scans over time
-* Batch rename
-* Scheduled scans for ongoing monitoring
+* Scan a whole drive or any folder
+* Sort by size at every level, so the largest thing is always one click away
+* Find duplicate files and the biggest files on the disk
+* Open a folder in Explorer straight from the results
+* No account, no adverts, no bundled offers
 
-No installer bloat, no bundled offers and no telemetry. Free at home and at work, with no Pro
-tier, no per-seat licence and no upsells.
-
-Built on Avalonia and .NET 8. The runtime is self-contained, so there is nothing to install
-beforehand.</description>
-    <summary>Free disk space analyser for Windows with treemap, duplicate detection and scheduled scans</summary>
-    <releaseNotes>https://github.com/techygeekshome/DiskGeek/releases/tag/v1.0.0</releaseNotes>
+Free for personal and commercial use. The .NET 8 runtime is bundled, so there is nothing to install
+first.</description>
+    <summary>Free disk space analyser for Windows - find what is actually filling the drive</summary>
+    <releaseNotes>https://github.com/techygeekshome/DiskGeek/releases/tag/v1.1.0</releaseNotes>
     <copyright>Copyright (c) 2026 TechyGeeksHome</copyright>
-    <tags>disk-space disk-analyzer duplicates treemap storage cleanup windows freeware admin</tags>
+    <tags>diskgeek disk-space disk-usage analyser storage windows freeware</tags>
     <projectSourceUrl>https://github.com/techygeekshome/DiskGeek</projectSourceUrl>
     <packageSourceUrl>https://github.com/techygeekshome/DiskGeek</packageSourceUrl>
     <docsUrl>https://techygeekshome.info/diskgeek/</docsUrl>
