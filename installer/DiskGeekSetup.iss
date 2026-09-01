@@ -51,6 +51,19 @@
 #define SourceDir "..\publish\win-x64"
 #define IconFile "..\src\DiskGeek.App\Assets\diskgeek.ico"
 
+#define FirstYear      "2026"
+#define CurrentYear    GetDateTimeString('yyyy','','')
+
+; From 2027 onward show a range rather than only the current year, so the copyright reads
+; 2026-2027 and so on without anyone having to remember to edit it.
+#if CurrentYear == FirstYear
+  #define CopyrightYears FirstYear
+#else
+  #define CopyrightYears FirstYear + "-" + CurrentYear
+#endif
+
+#include "DiskGeek_languages.iss"
+
 [Setup]
 ; Unique to this app - do NOT regenerate this for future versions of DiskGeek, only for a
 ; genuinely different product. Windows uses it to recognise "this is an upgrade of the same
@@ -61,6 +74,7 @@ AppVersion={#MyAppVersion}
 ; Stamps the version into DiskGeekSetup.exe's own file properties, so the installer
 ; reports the release version in Explorer and the release workflow can verify it.
 VersionInfoVersion={#MyAppVersion}
+AppCopyright={#CopyrightYears} {#MyAppPublisher}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -83,19 +97,25 @@ ArchitecturesInstallIn64BitMode=x64
 ; AppData\Local\Programs folder instead, which is what you just saw happen.
 PrivilegesRequired=admin
 
-[Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
+
+; With more than one language available the wizard has to ask, and it has to ask every time
+; rather than silently reusing whatever was picked last time on a shared machine. Detection
+; starts from the Windows UI language, so most people never think about it.
+ShowLanguageDialog=yes
+UsePreviousLanguage=no
+LanguageDetectionMethod=uilanguage
 
 [Tasks]
-Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopShortcut}"; GroupDescription: "{cm:Shortcuts}"; Flags: unchecked
 
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:WebSite}"; Filename: "{#MyAppURL}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchApp}"; Flags: nowait postinstall skipifsilent
