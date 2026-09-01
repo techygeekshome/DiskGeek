@@ -81,6 +81,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DefaultGroupName={#MyAppName}
+UninstallDisplayName={#MyAppName} {#MyAppVersion}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 OutputDir=Output
 OutputBaseFilename=DiskGeekSetup
