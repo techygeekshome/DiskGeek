@@ -74,6 +74,7 @@ AppVersion={#MyAppVersion}
 ; Stamps the version into DiskGeekSetup.exe's own file properties, so the installer
 ; reports the release version in Explorer and the release workflow can verify it.
 VersionInfoVersion={#MyAppVersion}
+VersionInfoDescription={#MyAppName} installer
 AppCopyright={#CopyrightYears} {#MyAppPublisher}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
