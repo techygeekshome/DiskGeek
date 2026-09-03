@@ -18,6 +18,14 @@
 
 ---
 
+## 🎬 See it in action
+
+[![DiskGeek demo video](https://img.youtube.com/vi/1L8GedFQFy4/maxresdefault.jpg)](https://www.youtube.com/watch?v=1L8GedFQFy4)
+
+Where the space actually went, in under a minute.
+
+---
+
 DiskGeek scans your drives and shows exactly what's eating your space, with a list view and a treemap view of disk usage. It finds both exact duplicates and near-duplicate files using perceptual hashing — including similar-image detection — and lets you search full-text across scan results. Batch rename and snapshot comparison (see what changed between scans over time) round it out, plus scheduled scans for ongoing monitoring.
 
 No installer bloat, no bundled offers, no telemetry. 100% free, no Pro tier, no upsells.
