@@ -25,20 +25,23 @@ No installer bloat, no bundled offers, no telemetry. 100% free, no Pro tier, no 
 ## 📸 Screenshots
 
 <p float="left">
+  <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-overview.png" width="49%" />
   <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-list-view.png" width="49%" />
+</p>
+<p float="left">
   <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-treemap-view.png" width="49%" />
-</p>
-<p float="left">
   <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-duplicates.png" width="49%" />
+</p>
+<p float="left">
   <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-similar-images.png" width="49%" />
-</p>
-<p float="left">
   <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-search.png" width="49%" />
-  <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-batch-rename.png" width="49%" />
 </p>
 <p float="left">
+  <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-batch-rename.png" width="49%" />
   <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-snapshots.png" width="49%" />
-  <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-scanning-banner.png" width="49%" />
+</p>
+<p float="left">
+  <img src="https://raw.githubusercontent.com/techygeekshome/DiskGeek/main/screenshots/screenshot-settings.png" width="49%" />
 </p>
 
 ## ⬇️ Download & run
