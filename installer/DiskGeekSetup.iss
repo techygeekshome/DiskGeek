@@ -42,13 +42,16 @@
 ; The release workflow passes the version in with /DMyAppVersion=x.y.z so that the
 ; git tag is the single source of truth. The value below is only a fallback for a
 ; local build straight out of the Inno Setup Compiler.
-#ifndef MyAppVersion
-#define MyAppVersion "1.1.1"
-#endif
+
 #define MyAppPublisher "TechyGeeksHome"
 #define MyAppURL "https://techygeekshome.info/diskgeek/"
 #define MyAppExeName "DiskGeek.App.exe"
 #define SourceDir "..\publish\win-x64"
+
+#ifndef MyAppVersion
+   #define MyAppVersion() GetVersionComponents(SourceDir + "\" + MyAppExeName, Local[0], Local[1], Local[2], Local[3]), str(Local[0]) + "." + str(Local[1]) + "." + str(Local[2])
+#endif
+
 #define IconFile "..\src\DiskGeek.App\Assets\diskgeek.ico"
 
 #define FirstYear      "2026"
@@ -71,6 +74,7 @@
 AppId={{FABE7889-47A7-4E2E-93F6-FE537C5E334D}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 ; Stamps the version into DiskGeekSetup.exe's own file properties, so the installer
 ; reports the release version in Explorer and the release workflow can verify it.
 VersionInfoVersion={#MyAppVersion}
@@ -82,7 +86,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-UninstallDisplayName={#MyAppName} {#MyAppVersion}
+UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 LicenseFile=..\LICENSE.rtf
 OutputDir=Output
